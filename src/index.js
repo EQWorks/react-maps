@@ -1,10 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import KeplerGL from 'kepler.gl'
+import { connect } from 'react-redux'
+import { addDataToMap } from 'kepler.gl/actions';
 
+import TorontoCenter from '../kepler-config/toronto-center.json'
 
-const Map = (props) => (
-  <KeplerGL {...props} />
-)
+const Map = (props) => {
+  
+  console.log(props)
+  useEffect(() => {
+    props.dispatch(addDataToMap(TorontoCenter))
+  }, [])
+  return <KeplerGL {...props} />
+}
 
-export default Map
+export default connect()(Map)
