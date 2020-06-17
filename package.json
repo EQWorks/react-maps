@@ -22,7 +22,10 @@
     "type": "git",
     "url": "git+https://github.com/EQWorks/poi-manage.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.15",
+    "moment": "^2.26.0"
+  },
   "peerDependencies": {
     "kepler.gl": "^2.2.0",
     "react": "^16.13.1",
@@ -38,6 +41,7 @@
     "@storybook/addon-links": "^5.3.19",
     "@storybook/addons": "^5.3.19",
     "@storybook/react": "^5.3.19",
+    "axios": "^0.19.2",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.0.1",
     "babel-loader": "^8.1.0",
