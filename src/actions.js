@@ -21,7 +21,11 @@ const FO = (api) => ({
       ), []),
     }
   },
-
+  getPopularTime: async ({ coords }) => {
+    const url = `/activity/popular-times?coords[]=${coords.join(',')}&region=yyz&frequency=hour`
+    const { data } = await api.get(url)
+    console.log('---> DATA!', data)
+  }
 })
 
 export default FO

@@ -41,6 +41,7 @@ const defaultProps = {
 
 
 const HexLayerMap = ({
+  dataInit,
   fillBasedOnInit,
   fillColors,
   elevationBasedOnInit,
@@ -54,7 +55,7 @@ const HexLayerMap = ({
   legendPosition,
   ...hexLayerProps
 }) => {
-  const { data, metrics, metricDispatch } = useMapData({})
+  const { data, metrics, metricDispatch } = useMapData({ dataInit })
 
   // NOTE: HexagonLayer processes its own values based on range of elevation and fill
   const [elevationBasedOn, setElevationBasedOn] = useState(elevationBasedOnInit)

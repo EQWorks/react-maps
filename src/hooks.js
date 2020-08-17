@@ -57,6 +57,7 @@ const SCALES = {
 }
 
 export const useMapData = ({
+  dataInit,
   dataAccessor = d => d,
   dataPropertyAccessor = d => d,
   keyTypes = ['number'],
@@ -65,13 +66,13 @@ export const useMapData = ({
 }) => {
   // TODO use d3 to support multiple scales
   const [{ data, metrics }, metricDispatch] = useReducer((state, { type, payload }) => {
-    if (type === 'data') {      
-      const DATA_FIELDS = staticDataKeys || Object.entries(dataPropertyAccessor(dataAccessor(payload)[0]))
+    if (type === 'data') {  
+      const DATA_FIELDS = staticDataKeys || Object.entries((dataPropertyAccessor(dataAccessor(payload) || []) || [])[0] || {})
         .filter(entry => keyTypes.includes(typeof entry[1]) && !excludeKeys.includes(entry[0]))
         .map(([k]) => k)
       // { [key]: { max, min }}
       // calculate all min and max
-      const metrics =  dataAccessor(payload).reduce((agg, ele) => ({
+      const metrics =  (dataAccessor(payload) || []).reduce((agg, ele) => ({
         ...DATA_FIELDS
           .reduce((rowAgg, key) => ({
             ...rowAgg,
@@ -91,7 +92,14 @@ export const useMapData = ({
       ...state,
       [type]: payload,
     }
-  }, { data: [], metrics: {} })
+  }, { data: dataInit || [], metrics: {} })
+
+  useEffect(() => {
+    if (dataInit) {
+      metricDispatch({ type: 'data', payload: dataInit })
+    }
+  }, [dataInit])
+
   return {
     data,
     metrics,
