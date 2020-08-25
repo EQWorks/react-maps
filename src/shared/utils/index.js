@@ -7,7 +7,7 @@ import * as eqMapLayers from '../../components/layers/index'
  * @returns { instanceOf } Deck.gl layer
  */
 export const processLayers = (layerArray, props) => {
-  return layerArray.map(layer => layer === 'cluster' 
+  return layerArray.map(layer => layer === 'cluster'
     ? new eqMapLayers[layer](props)
     : eqMapLayers[layer](props))
 }
@@ -20,6 +20,7 @@ export const processLayers = (layerArray, props) => {
 export const getDataCoordinates = (data) => {
   let finalCoordinateArray
 
+  // ====[TODO] properly handle different types
   if (data[0].properties.polygon) {
     finalCoordinateArray = data.reduce((acc, poi) =>
       [...acc, JSON.parse(poi.properties.polygon_json).coordinates[0]], []).flat()

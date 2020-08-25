@@ -2,9 +2,16 @@
 import React from 'react'
 import { storiesOf } from '@storybook/react'
 import { POIMap } from '../src'
+
+import foAxios from '../src/axios'
+import DeckMap from '../src/components/deck'
+import PoiListMap from '../src/components/poi-list-map'
 import POIsRadii from './data/pois-radii'
 import POIsRadiiTo from './data/pois-radiito'
 import POIsPolygonsVan from './data/pois-polygons-van'
+
+
+const getPoiList = foAxios.getPoiList
 
 storiesOf('POI', module)
   .add('POI map - icon', () => (
@@ -23,7 +30,7 @@ storiesOf('POI', module)
     <POIMap poiData={ POIsPolygonsVan } layerArray={ ['polygon'] }/>
   ))
   .add('POI maps - point drawing layer', () => (
-    <POIMap 
+    <POIMap
       poiData={ POIsRadiiTo }
       layerArray={ ['poi_draw'] }
       mode={ 'point-draw'}
@@ -31,10 +38,14 @@ storiesOf('POI', module)
     />
   ))
   .add('POI maps - polygon drawing layer', () => (
-    <POIMap 
+    <POIMap
       poiData={ [] }
       layerArray={ ['poi_draw'] }
       mode={ 'polygon-draw'}
       controller={{ doubleClickZoom: false }}
     />
+  ))
+  // TODO infer layer types
+  .add('FirstOrder Data', () => (
+    <PoiListMap getPoiList={getPoiList} poi_list_id={1291} />
   ))

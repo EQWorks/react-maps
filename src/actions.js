@@ -11,7 +11,7 @@ const FO = (api) => ({
 
     return {
       data: transformReportWi(report),
-      duration: { ...duration, key: genUniqueDateKey(duration) }, 
+      duration: { ...duration, key: genUniqueDateKey(duration) },
       // TODO review end-to-end use of durations, seems like duplicated effort
       durations: Object.values(durations).reduce((flat, dateTypeRanges) => (
         [
@@ -21,7 +21,21 @@ const FO = (api) => ({
       ), []),
     }
   },
+  getPoiList: async ({ poi_list_id, params }) => {
+    const url = `/poi/${poi_list_id}`
+    const { data: { eachPOIData } } = await api.get(url, { params })
+    /*
+      eachPOIData: [,…]
+      message: "Fetched pois for poilist 1291"
+      poiListID: 1291
+      poiListName: "FCL Amy’s Location"
+      rowCount: 264
+      status: "success"
+    */
+    // { : { geometry, properties }}
 
+    return eachPOIData.map(({ geo_json_poi }) => geo_json_poi)
+  }
 })
 
 export default FO

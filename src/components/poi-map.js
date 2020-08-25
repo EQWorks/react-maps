@@ -81,7 +81,7 @@ const POIMap = ({
         setOnClickPayload({ longitude, latitude, zoom: layer.state.z + 2})
       } else onClickHandle(deckEvent, setOnClickPayload)
     }, [onClickHandle]
-  ) 
+  )
 
   const { width, height } = useMemo(() => {
     // initial rendering gives deckRef.current undefined
@@ -89,7 +89,7 @@ const POIMap = ({
       ? deckRef.current.deck
       : { width: 0, height: 0 }
   }, [deckRef.current])
-  
+
   // React Hook to handle setting up of initial view and layers
   useLayoutEffect(() => {
     if (poiData.length && width && height) {
@@ -122,8 +122,8 @@ const POIMap = ({
         layers={ layers }
         getCursor={ getCursor }
         controller={ controller }
-      > 
-        <StaticMap 
+      >
+        <StaticMap
           mapboxApiAccessToken={ process.env.MAPBOX_ACCESS_TOKEN }
         />
       </DeckGL>
