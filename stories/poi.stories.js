@@ -4,7 +4,6 @@ import { storiesOf } from '@storybook/react'
 import { POIMap } from '../src'
 
 import foAxios from '../src/axios'
-import DeckMap from '../src/components/deck'
 import PoiListMap from '../src/components/poi-list-map'
 import POIsRadii from './data/pois-radii'
 import POIsRadiiTo from './data/pois-radiito'

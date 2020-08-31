@@ -55,6 +55,9 @@ const POIMap = ({
   ...mapProps
 }) => {
   const [ data, setData ] = useState(poiData)
+  useEffect(() => {
+    setData(poiData)
+  }, [poiData])
   const [ layers, setLayers ] = useState([])
   const [ viewState, setViewState ] = useState(INIT_VIEW_STATE)
   const [ onClickPayload, setOnClickPayload ] = useState({})

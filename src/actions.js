@@ -32,7 +32,6 @@ const FO = (api) => ({
       rowCount: 264
       status: "success"
     */
-    // { : { geometry, properties }}
 
     return eachPOIData.map(({ geo_json_poi }) => geo_json_poi)
   }
