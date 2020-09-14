@@ -27,7 +27,10 @@ const FO = (api) => ({
       ), []),
     }
   },
-
+  postMLQuery: async ({ query }) => {
+    const { data } = await api.post('ml', { ...query })
+    return data
+  }
 })
 
 export default FO

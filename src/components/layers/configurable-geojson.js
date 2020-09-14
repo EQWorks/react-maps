@@ -47,7 +47,7 @@ export const useConfigurableGeoJson = ({
 
   const layers = useMemo(() => ([
     new GeoJsonLayer({
-      id: `xyz-scatterplot-layer`,
+      id: `xyz-geojson-layer`,
       data,
       pickable: onClick || onHover,
       onClick,
