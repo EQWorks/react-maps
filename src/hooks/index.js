@@ -183,7 +183,7 @@ export const useRadius = ({
     return getRadius
   }, [radiusBasedOn, radiusDataScale, radii, getRadius, metrics, dataPropertyAccessor])
 
-  return { finalGetRadius, setRadiusBasedOn }
+  return { finalGetRadius, radiusBasedOn, setRadiusBasedOn }
 }
 
 export const useTimeline = (timestampInit, speedInterval) => {

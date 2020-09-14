@@ -16,6 +16,6 @@ const postMLQuery = FO(getAxios()).postMLQuery
 
 storiesOf('Locus ML', module)
   .add('Query Map', () => (
-    <LocusMLMap postMLQuery={postMLQuery} />
+    <LocusMLMap postMLQuery={postMLQuery} radiusBasedOnInit='' />
   ))
 

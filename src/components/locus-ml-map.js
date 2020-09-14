@@ -6,6 +6,8 @@ import { useQuery } from 'react-query'
 import { interpolateBlues } from 'd3-scale-chromatic'
 
 import { useConfigurableGeoJson } from './layers/configurable-geojson'
+import { useConfigurableScatterplot } from './layers/configurable-scatterplot'
+
 import Map from './generic-map'
 
 
@@ -73,20 +75,21 @@ const LocusMLMap = ({
   fillBasedOnInit,
   fillDataScale,
   fillColors,
-  elevationBasedOnInit,
-  elevationDataScale,
-  elevations,
+  getFillColor,
+  radiusBasedOnInit,
+  getRadius,
+  radiusDataScale,
+  radii,
   onClick,
   onHover,
   opacity,
-  getElevation,
-  getFillColor,
   getLineWidth,
   getLineColor,
   showLegend,
   legendPosition,
-  ...geoJsonLayerProps
+  ...scatterLayerProps
 }) => {
+  console.log('=======')
   const [query, setMLQuery] = useState('{}')
   const [queryKey, setQueryKey] = useState('')
 
@@ -112,6 +115,7 @@ const LocusMLMap = ({
   useEffect(() => {
     if (isSuccess) {
       console.log('======> UPDATE MAP DATA', payload)
+
       metricDispatch({ type: 'data', payload })
     }
   }, [payload, isSuccess, metricDispatch])
@@ -119,20 +123,22 @@ const LocusMLMap = ({
   // ====[TODO] a successful query here is [{}] with no geojson
   // ====] do we convert the data?
   // ====] or use a toggle to switch between the layers?
+
+  // ====[TODO] proper defaults for props & hooks
   const {
     metrics,
     metricDispatch,
-    elevationBasedOn,
-    setElevationBasedOn,
+    radiusBasedOn,
+    setRadiusBasedOn,
     fillBasedOn,
     setFillBasedOn,
     layers,
     legends,
-  } = useConfigurableGeoJson({
-    elevationBasedOnInit,
-    getElevation,
-    elevationDataScale,
-    elevations,
+  } = useConfigurableScatterplot({
+    radiusBasedOnInit,
+    getRadius: () => 1000,
+    radii: [0, 1000],
+    radiusDataScale: 'linear',
     fillBasedOnInit,
     getFillColor,
     fillDataScale,
@@ -142,8 +148,8 @@ const LocusMLMap = ({
     opacity,
     getLineWidth,
     getLineColor,
-    geoJsonLayerProps,
-})
+    scatterLayerProps,
+  })
 
   return (
     <div>
@@ -158,8 +164,8 @@ const LocusMLMap = ({
           </select>
         </div>
         <div>
-          <strong>Elevation Based On</strong>
-          <select value={elevationBasedOn} onChange={e => setElevationBasedOn(e.target.value)}>
+          <strong>Radius Based On</strong>
+          <select value={radiusBasedOn} onChange={e => setRadiusBasedOn(e.target.value)}>
             <option value=''>None</option>
             {Object.keys(metrics).map(key => <option key={key}>{key}</option>)}
           </select>
