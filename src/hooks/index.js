@@ -170,7 +170,7 @@ export const useRadius = ({
   useEffect(() => {
     setRadiusBasedOn(radiusBasedOnInit)
   }, [radiusBasedOnInit])
-
+  
   const finalGetRadius = useMemo(() => {
     if (radiusBasedOn.length) {
       const d3Fn = SCALES[radiusDataScale]([
