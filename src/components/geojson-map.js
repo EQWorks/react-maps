@@ -1,11 +1,9 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-
-import { GeoJsonLayer } from 'deck.gl'
 
 import { interpolateBlues } from 'd3-scale-chromatic'
 
-import { useLegends, useMapData, useElevation, useFill } from '../hooks'
+import { useConfigurableGeoJson } from './layers/configurable-geojson'
 import Map from './generic-map'
 
 
@@ -95,66 +93,31 @@ const GeoJsonMap = ({
     }
   }
 
-  const { data, metrics, metricDispatch } = useMapData({
-    dataAccessor: d => d.features,
-    dataPropertyAccessor: d => d.properties,
-  })
-  
-  const { elevationBasedOn, finalGetElevation, setElevationBasedOn } = useElevation({
+  const {
+    metrics,
+    metricDispatch,
+    elevationBasedOn,
+    setElevationBasedOn,
+    fillBasedOn,
+    setFillBasedOn,
+    layers,
+    legends,
+  } = useConfigurableGeoJson({
     elevationBasedOnInit,
     getElevation,
     elevationDataScale,
     elevations,
-    metrics,
-    dataPropertyAccessor: d => d.properties,
-  })
-
-  const { fillBasedOn, finalGetFillColor, setFillBasedOn } = useFill({
     fillBasedOnInit,
     getFillColor,
     fillDataScale,
     fillColors,
-    metrics,
-    dataPropertyAccessor: d => d.properties,
-  })
-
-  const layers = useMemo(() => ([
-    new GeoJsonLayer({
-      id: `xyz-scatterplot-layer`,
-      data,
-      pickable: onClick || onHover,
-      onClick,
-      onHover,
-      opacity,
-      extruded: elevationBasedOn.length,
-      getFillColor: finalGetFillColor,
-      getElevation: finalGetElevation,
-      getLineWidth,
-      getLineColor,
-      updateTriggers: {
-        getFillColor: [finalGetFillColor, fillDataScale, fillColors],
-        getElevation: [finalGetElevation, elevationDataScale, elevations]
-      },
-      ...geoJsonLayerProps,
-    })
-  ]), [
-    geoJsonLayerProps,
-    data,
     onClick,
     onHover,
-    elevationBasedOn,
-    elevationDataScale,
-    elevations,
-    finalGetElevation,
-    finalGetFillColor,
-    fillColors,
-    fillDataScale,
-    getLineColor,
-    getLineWidth,
     opacity,
-  ])
-
-  const legends = useLegends({ elevationBasedOn, fillBasedOn, fillColors, metrics })
+    getLineWidth,
+    getLineColor,
+    geoJsonLayerProps,
+})
 
   return (
     <div>
