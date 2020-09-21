@@ -8,6 +8,7 @@ import { interpolateBlues } from 'd3-scale-chromatic'
 import { useConfigurableLayer } from './layers/configurable-layer'
 import LayerControls from './layer-controls'
 import { generateLocusMLQueryKey } from '../locus-ml/locus-ml-utils'
+import { usePointRadiusTemplate } from '../locus-ml/report-query-template'
 
 import Map from './generic-map'
 
@@ -75,6 +76,7 @@ const LAYER_FEATURE_KEYS = {
 
 const LocusMLMap = ({
   postMLQuery,
+  useRawInput,
   fillBasedOnInit,
   fillDataScale,
   fillColors,
@@ -96,14 +98,29 @@ const LocusMLMap = ({
   legendPosition,
   ...otherLayerProps
 }) => {
-  console.log('=======')
+  console.log('======= RENDER =======')
   const [query, setMLQuery] = useState('{}')
   const [queryKey, setQueryKey] = useState('')
 
+  const { query: templateQuery, distanceInMeters, lat, lon, setDistance, setCoordinates } = usePointRadiusTemplate()
+
+  const setCoordsOnClick = o => {
+    console.log('====> on click', o)
+    const [lon, lat] = o.coordinate
+    setCoordinates({ lat, lon })
+  }
+  // ====[TODO] temp state solution
+  useEffect(() => {
+    if (!useRawInput) {
+      setMLQuery(templateQuery)
+    }
+  }, [useRawInput, templateQuery])
+
   const handleSetData = () => {
     try {
-      const jsonQuery = JSON.parse(query)
+      const jsonQuery = typeof query === 'object' ? query : JSON.parse(query)
       const queryKey = generateLocusMLQueryKey(jsonQuery)
+      console.log('=====> handle set data!', queryKey)
       setQueryKey(queryKey)
     } catch (e) {
       console.warn("===== INVALID LOCUSML QUERY =====", e)
@@ -116,7 +133,7 @@ const LocusMLMap = ({
     data: payload,
   } = useQuery(
     queryKey,
-    () => postMLQuery({ query: JSON.parse(query) }),
+    () => postMLQuery({ query: typeof query === 'object' ? query : JSON.parse(query) }),
   )
   
   useEffect(() => {
@@ -222,7 +239,13 @@ const LocusMLMap = ({
     <div>
       <div>
         <button onClick={handleSetData}>Load ML Query</button>
-        <textarea onChange={e => setMLQuery(e.target.value)}/>
+        {useRawInput ? (<>
+          <textarea onChange={e => setMLQuery(e.target.value)}/>
+        </>) : (<div>
+          <label>Radius (m)</label>
+          <input type='number' value={distanceInMeters} onChange={e => setDistance(e.target.value)} />
+          <p>Current Coordinates: {lat} / {lon} (click map to set)</p>
+        </div>)}
         <LayerControls
           payload={payload}
           layerType={layerType}
@@ -242,6 +265,7 @@ const LocusMLMap = ({
         showLegend={showLegend}
         position={legendPosition}
         legends={legends}
+        onClick={setCoordsOnClick}
       />
     </div>
   )

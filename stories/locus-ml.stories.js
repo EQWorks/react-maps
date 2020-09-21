@@ -15,7 +15,9 @@ const getAxios = () => axios.create({
 const postMLQuery = FO(getAxios()).postMLQuery
 
 storiesOf('Locus ML', module)
-  .add('Query Map', () => (
+  .add('Raw Input', () => (
+    <LocusMLMap postMLQuery={postMLQuery} radiusBasedOnInit='' useRawInput />
+  ))
+  .add('Distance onClick', () => (
     <LocusMLMap postMLQuery={postMLQuery} radiusBasedOnInit='' />
   ))
-

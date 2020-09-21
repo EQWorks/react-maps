@@ -58,6 +58,7 @@ const Map = ({
   legends,
   showTooltip,
   tooltipNode,
+  onClick,
   ...tooltipProps
 }) => {
   const deckRef = useRef()
@@ -102,7 +103,7 @@ const Map = ({
         controller={ true }
         // NOTE: same structure as layer click
         // onHover={d => console.log('----> map hover', d)}
-        // onClick={d => console.log('----> map click', d)}
+        onClick={onClick}
       >
         <StaticMap mapboxApiAccessToken={ process.env.MAPBOX_ACCESS_TOKEN } />
       </DeckGL>

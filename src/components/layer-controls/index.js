@@ -30,12 +30,12 @@ const LayerControls = ({
           <option value='geojson'>Geojson</option>
         </select>
       </div>) : 'Use a LocusML query to fetch data!'}
-      {layerType && (<div>
+      {layerType && payload && payload[0] && (<div>
         <strong>Geo Feature Config</strong>
         {Object.keys(LAYER_FEATURE_KEYS[layerType]).map(key => (
           <div key={key}>
             <strong>{key}</strong>
-            <select value={featureKeys[key]} onChange={e => setLayer({ type: 'featureKeys', value: { [key]: e.target.value } })}>
+            <select value={(featureKeys || {})[key]} onChange={e => setLayer({ type: 'featureKeys', value: { [key]: e.target.value } })}>
               {Object.keys(payload[0]).map(key => <option key={key}>{key}</option>)}
             </select>
           </div>
