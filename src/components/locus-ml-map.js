@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import PropTypes from 'prop-types'
 
 import { useQuery } from 'react-query'
 
 import { interpolateBlues } from 'd3-scale-chromatic'
 
-import { useConfigurableGeoJson } from './layers/configurable-geojson'
-import { useConfigurableScatterplot } from './layers/configurable-scatterplot'
+import { useConfigurableLayer } from './layers/configurable-layer'
+import LayerControls from './layer-controls'
+import { generateLocusMLQueryKey } from '../locus-ml/locus-ml-utils'
 
 import Map from './generic-map'
 
@@ -66,6 +67,12 @@ const defaultProps = {
   legendPosition: 'top-left',
 }
 
+const LAYER_FEATURE_KEYS = {
+  scatterplot: { latitude: ['lat', 'latitude'], longitude: ['lon', 'lng', 'longitude'] },
+  geojson: { geojson: ['geojson'] },
+}
+
+
 const LocusMLMap = ({
   postMLQuery,
   fillBasedOnInit,
@@ -76,6 +83,10 @@ const LocusMLMap = ({
   getRadius,
   radiusDataScale,
   radii,
+  elevationBasedOnInit,
+  elevationDataScale,
+  elevations,
+  getElevation,
   onClick,
   onHover,
   opacity,
@@ -83,7 +94,7 @@ const LocusMLMap = ({
   getLineColor,
   showLegend,
   legendPosition,
-  ...scatterLayerProps
+  ...otherLayerProps
 }) => {
   console.log('=======')
   const [query, setMLQuery] = useState('{}')
@@ -95,7 +106,7 @@ const LocusMLMap = ({
       const queryKey = generateLocusMLQueryKey(jsonQuery)
       setQueryKey(queryKey)
     } catch (e) {
-      console.warn("===== INVALID LOCUSML QUERY =====")
+      console.warn("===== INVALID LOCUSML QUERY =====", e)
     }
   }
   const {
@@ -104,7 +115,7 @@ const LocusMLMap = ({
     error,
     data: payload,
   } = useQuery(
-    'locusml',
+    queryKey,
     () => postMLQuery({ query: JSON.parse(query) }),
   )
   
@@ -121,6 +132,57 @@ const LocusMLMap = ({
   // ====] or use a toggle to switch between the layers?
 
   // ====[TODO] proper defaults for props & hooks
+
+  const [
+    {
+      layerType,
+      featureKeys,
+    },
+    setLayer,
+  ] = useReducer((state, { type, value }) => {
+    if (type === 'layer') {
+      let { featureKeys } = state
+      if (payload) {
+        // check for default feature keys
+        // assumes [{}] payload
+        featureKeys = Object.entries(LAYER_FEATURE_KEYS[value] || {}).reduce((agg, [internalKey, defaultKeys]) => {
+          console.log('--->', internalKey, defaultKeys)
+          for (let i = 0; i < defaultKeys.length; i++) {
+            const key = defaultKeys[i]
+            // ====[TODO] sample other rows of the return
+            console.log("====> SEARCHING FOR", key)
+            if (key in payload[0]) {
+              agg[internalKey]  = key
+              break
+            }
+          }
+          return agg
+        }, {})
+      }
+      console.log('----> update layer type', value)
+      return {
+        ...state,
+        layerType: value,
+        featureKeys,
+      }
+    }
+
+    if (type === 'featureKeys') {
+      return {
+        ...state,
+        featureKeys: {
+          ...state.featureKeys,
+          ...value,
+        }
+      }
+    }
+    return {
+      ...state,
+      [payload]: value,
+    }
+  }, {})
+
+  // from useConfigurableXXXLayer
   const {
     metrics,
     metricDispatch,
@@ -128,9 +190,14 @@ const LocusMLMap = ({
     setRadiusBasedOn,
     fillBasedOn,
     setFillBasedOn,
+    elevationBasedOn,
+    setElevationBasedOn,
     layers,
     legends,
-  } = useConfigurableScatterplot({
+  } = useConfigurableLayer({
+    layerType,
+    featureKeys,
+    payload,
     radiusBasedOnInit,
     getRadius: () => 1000,
     radii: [0, 1000],
@@ -139,12 +206,16 @@ const LocusMLMap = ({
     getFillColor,
     fillDataScale,
     fillColors,
+    elevationBasedOnInit,
+    elevationDataScale,
+    elevations,
+    getElevation,
     onClick,
     onHover,
     opacity,
     getLineWidth,
     getLineColor,
-    scatterLayerProps,
+    otherLayerProps,
   })
 
   return (
@@ -152,20 +223,19 @@ const LocusMLMap = ({
       <div>
         <button onClick={handleSetData}>Load ML Query</button>
         <textarea onChange={e => setMLQuery(e.target.value)}/>
-        <div>
-          <strong>Fill Based On</strong>
-          <select value={fillBasedOn} onChange={e => setFillBasedOn(e.target.value)}>
-            <option value=''>None</option>
-            {Object.keys(metrics).map(key => <option key={key}>{key}</option>)}
-          </select>
-        </div>
-        <div>
-          <strong>Radius Based On</strong>
-          <select value={radiusBasedOn} onChange={e => setRadiusBasedOn(e.target.value)}>
-            <option value=''>None</option>
-            {Object.keys(metrics).map(key => <option key={key}>{key}</option>)}
-          </select>
-        </div>
+        <LayerControls
+          payload={payload}
+          layerType={layerType}
+          featureKeys={featureKeys}
+          metrics={metrics}
+          setLayer={setLayer}
+          radiusBasedOn={radiusBasedOn}
+          setRadiusBasedOn={setRadiusBasedOn}
+          elevationBasedOn={elevationBasedOn}
+          setElevationBasedOn={setElevationBasedOn}
+          fillBasedOn={fillBasedOn}
+          setFillBasedOn={setFillBasedOn}
+        />
       </div>
       <Map
         layers={layers}
