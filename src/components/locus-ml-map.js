@@ -66,61 +66,6 @@ const defaultProps = {
   legendPosition: 'top-left',
 }
 
-// ====[TODO] validation
-// ====[TODO] parseExpression logic
-const columnKey = columns => columns.map(([name, view]) => `${name}/${view}`).join('|##|')
-
-const generateLocusMLQueryKey = ({ query, views }) => {
-  return [
-    `type:${query.type}`,
-    `columns:${columnKey(query.columns)}`,
-    `filters:${filterKey(query.filters)}`,
-    `from:${query.from}`,
-    `joins:${'x'}`,
-    `where:${'x'}`,
-    `groupBy:${columnKey(query.groupBy)}`,
-    // ====[TODO] proper sorting
-    `orderBy:${columnKey(query.orderBy)}`,
-    `views:${views.map(({ id }) => id).join('|##|')}`
-  ].join('/__/')
-  "query": {
-      "joins": [],
-      "where": [
-          {
-              "type": "operator",
-              "values": ["=", ["date_type", "report_1_4"], 2]
-          },
-          {
-              "type": "operator",
-              "values": ["=", ["start_date", "report_1_4"], "2017-11-13T05:00:00.000Z"]
-          },
-          {
-              "type": "operator",
-              "values": ["=", ["end_date", "report_1_4"], "2017-11-19T05:00:00.000Z"]
-          },
-          {
-              "type": "function",
-              "values": [
-                  "dWithin",
-                  { "type": "function", "cast": "geography", "values": ["setSRID", { "type": "function", "values": ["makePoint", ["lat", "report_1_4"],["lon","report_1_4"]] }, 4326] },
-                  { "type": "function", "cast": "geography", "values": ["setSRID", { "type": "function", "values": ["makePoint", 45.4700622, -73.6164971] }, 4326] },
-                  100000
-              ]
-          }
-      ]
-  },
-  "views": [
-      {
-          "type": "report",
-          "id": "report_1_4",
-          "report_id": 4,
-          "layer_id": 1,
-          "name": "report_1_4"
-      }
-  ]
-  return JSON.stringify(query)
-}
-
 const LocusMLMap = ({
   postMLQuery,
   fillBasedOnInit,
