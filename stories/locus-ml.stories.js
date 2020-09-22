@@ -21,3 +21,6 @@ storiesOf('Locus ML', module)
   .add('Distance onClick', () => (
     <LocusMLMap postMLQuery={postMLQuery} radiusBasedOnInit='' />
   ))
+  .add('ST_Contains with Draw', () => (
+    <LocusMLMap postMLQuery={postMLQuery} />
+  ))

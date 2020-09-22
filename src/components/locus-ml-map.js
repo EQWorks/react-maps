@@ -1,7 +1,15 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useMemo, useEffect, useReducer } from 'react'
 import PropTypes from 'prop-types'
 
 import { useQuery } from 'react-query'
+
+import {
+  EditableGeoJsonLayer,
+  DrawPointMode,
+  DrawCircleFromCenterMode,
+  DrawRectangleMode,
+  DrawPolygonMode,
+} from 'nebula.gl'
 
 import { interpolateBlues } from 'd3-scale-chromatic'
 
@@ -12,6 +20,12 @@ import { usePointRadiusTemplate } from '../locus-ml/report-query-template'
 
 import Map from './generic-map'
 
+
+const DRAW_MODE = {
+  'polygon': DrawPolygonMode,
+  'rectangle': DrawRectangleMode,
+  'circle': DrawCircleFromCenterMode,
+}
 
 const propTypes = {
   fillBasedOnInit: PropTypes.string,
@@ -48,6 +62,7 @@ const propTypes = {
 }
 
 const defaultProps = {
+  radiusBasedOnInit: '',
   fillBasedOnInit: '',
   fillDataScale: 'linear',
   fillColors: [interpolateBlues(0), interpolateBlues(1)],
@@ -235,6 +250,33 @@ const LocusMLMap = ({
     otherLayerProps,
   })
 
+  const [draw, setDraw] = useState(false)
+  const [features, setFeatures] = useState([])
+
+  const finalLayers = useMemo(() => {
+    let finalLayers = []
+    if (draw) {
+      finalLayers.push(new EditableGeoJsonLayer({
+        id: 'ml-contains-draw',
+        data: {
+          type: 'FeatureCollection',
+          features,
+        },
+        mode: DRAW_MODE[draw],
+        selectedFeatureIndexes: [], // can be static
+        onEdit: ({ updatedData, editType }) => {
+          console.log('=====> EDIT!', updatedData, editType)
+          // https://nebula.gl/docs/api-reference/layers/editable-geojson-layer
+          if (editType === 'addFeature') {
+            setFeatures(updatedData.features.slice(-1))
+          }
+        }
+      }))
+    }
+    finalLayers = [...finalLayers, ...layers]
+    return finalLayers
+  }, [layers, draw, features, setFeatures])
+
   return (
     <div>
       <div>
@@ -245,6 +287,13 @@ const LocusMLMap = ({
           <label>Radius (m)</label>
           <input type='number' value={distanceInMeters} onChange={e => setDistance(e.target.value)} />
           <p>Current Coordinates: {lat} / {lon} (click map to set)</p>
+          <label>Draw</label>
+          <select onChange={e => setDraw(e.target.value)}>
+            <option value={false}>None</option>
+            <option value='rectangle'>Rectangle</option>
+            <option value='circle'>Circle</option>
+            <option value='polygon'>Polygon</option>
+          </select>
         </div>)}
         <LayerControls
           payload={payload}
@@ -261,7 +310,7 @@ const LocusMLMap = ({
         />
       </div>
       <Map
-        layers={layers}
+        layers={finalLayers}
         showLegend={showLegend}
         position={legendPosition}
         legends={legends}
