@@ -16,7 +16,8 @@ import { interpolateBlues } from 'd3-scale-chromatic'
 import { useConfigurableLayer } from './layers/configurable-layer'
 import LayerControls from './layer-controls'
 import { generateLocusMLQueryKey } from '../locus-ml/locus-ml-utils'
-import { usePointRadiusTemplate } from '../locus-ml/report-query-template'
+import { usePointRadiusTemplate, useContainsTemplate } from '../locus-ml/report-query-template'
+
 
 import Map from './generic-map'
 
@@ -118,6 +119,8 @@ const LocusMLMap = ({
   const [queryKey, setQueryKey] = useState('')
 
   const { query: templateQuery, distanceInMeters, lat, lon, setDistance, setCoordinates } = usePointRadiusTemplate()
+  const { query: containsTemplateQuery, setVertices } = useContainsTemplate()
+
 
   const setCoordsOnClick = o => {
     console.log('====> on click', o)
@@ -126,13 +129,25 @@ const LocusMLMap = ({
   }
   // ====[TODO] temp state solution
   useEffect(() => {
-    if (!useRawInput) {
+    if (!useRawInput && !draw) {
+      console.log("======================> UPDATE ML QUERY WITH TEMPLATE!!!!!")
       setMLQuery(templateQuery)
     }
-  }, [useRawInput, templateQuery])
+  }, [useRawInput, draw, templateQuery])
+
+  useEffect(() => {
+    if (draw) {
+      console.log('----> update ml query from draw')
+      console.log('---->', containsTemplateQuery)
+      setMLQuery(containsTemplateQuery)
+    }
+  }, [draw, containsTemplateQuery])
+
+  // ==== END temp state solution
 
   const handleSetData = () => {
     try {
+      console.log('=========> set data', query)
       const jsonQuery = typeof query === 'object' ? query : JSON.parse(query)
       const queryKey = generateLocusMLQueryKey(jsonQuery)
       console.log('=====> handle set data!', queryKey)
@@ -268,7 +283,11 @@ const LocusMLMap = ({
           console.log('=====> EDIT!', updatedData, editType)
           // https://nebula.gl/docs/api-reference/layers/editable-geojson-layer
           if (editType === 'addFeature') {
-            setFeatures(updatedData.features.slice(-1))
+            const newFeatures = updatedData.features.slice(-1)
+            setFeatures(newFeatures)
+            // ====[TODO] validation and multi polygon
+            // [lon, lat]
+            setVertices(newFeatures[0].geometry.coordinates[0])
           }
         }
       }))

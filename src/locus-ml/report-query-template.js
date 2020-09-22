@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react'
 
 
-const BASE_REPORT_QUERY = ({ distanceInMeters, lat, lon }) => ({
+const BASE_REPORT_QUERY = ({ distanceInMeters, lat, lon, vertices }) => ({
   "query": {
       "type": "select",
       "columns": [
@@ -127,7 +127,11 @@ const BASE_REPORT_QUERY = ({ distanceInMeters, lat, lon }) => ({
           },
           {
               "type": "function",
-              "values": [
+              "values": vertices ? [
+                  "contains",
+                  { "type": "function", "values": ["setSRID", { "type": "function", "values": ["makePolygon", { "type": "function", "values": ["geomFromText", `'LINESTRING(${vertices.map(([lon, lat]) => `${lat} ${lon}`).join(',')})'`] }]}, 4326] },
+                  { "type": "function", "values": ["setSRID", { "type": "function", "values": ["makePoint", ["lat", "report_1_4"],["lon","report_1_4"]] }, 4326] }
+                ] : [
                   "dWithin",
                   { "type": "function", "cast": "geography", "values": ["setSRID", { "type": "function", "values": ["makePoint", ["lat", "report_1_4"],["lon","report_1_4"]] }, 4326] },
                   { "type": "function", "cast": "geography", "values": ["setSRID", { "type": "function", "values": ["makePoint", lat, lon] }, 4326] },
@@ -185,4 +189,24 @@ export const usePointRadiusTemplate = () => {
   const setDistance = value => dispatch({ type: 'distanceInMeters', value })
   const setCoordinates = value => dispatch({ type: 'coordinates', value })
   return { ...queryTemplate, setDistance, setCoordinates }
+}
+
+export const useContainsTemplate = () => {
+  const [queryTemplate, dispatch] = useReducer((state, { type, value }) => {
+    let update = {
+      ...state,
+      [type]: value,
+    }
+    console.log('-=====> contain template update', update)
+    return {
+      ...update,
+      query: BASE_REPORT_QUERY(update)
+    }
+  }, {
+    query: BASE_REPORT_QUERY({ vertices: [] }),
+    vertices: [],
+  })
+  const setVertices = value => dispatch({ type: 'vertices', value })
+  
+  return { ...queryTemplate, setVertices }
 }
