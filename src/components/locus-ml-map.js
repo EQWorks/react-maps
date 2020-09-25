@@ -143,6 +143,8 @@ const LocusMLMap = ({
     }
   }, [draw, containsTemplateQuery])
 
+  45.56291653324331 -75.63638682098136
+  45.56291653324331 -75.63638682098136
   // ==== END temp state solution
 
   const handleSetData = () => {
