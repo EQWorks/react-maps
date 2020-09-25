@@ -99,7 +99,7 @@ const GeoJsonMap = ({
     dataAccessor: d => d.features,
     dataPropertyAccessor: d => d.properties,
   })
-  
+
   const { elevationBasedOn, finalGetElevation, setElevationBasedOn } = useElevation({
     elevationBasedOnInit,
     getElevation,

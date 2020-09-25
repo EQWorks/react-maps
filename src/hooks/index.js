@@ -70,7 +70,7 @@ export const useMapData = ({
         .map(([k]) => k)
       // { [key]: { max, min }}
       // calculate all min and max
-      const metrics =  dataAccessor(payload).reduce((agg, ele) => ({
+      const metrics = dataAccessor(payload).reduce((agg, ele) => ({
         ...DATA_FIELDS
           .reduce((rowAgg, key) => ({
             ...rowAgg,

@@ -25,9 +25,14 @@ const INIT_VIEW_STATE = {
   bearing: 0,
   transitionDuration: 300,
   transitionInterpolator: new FlyToInterpolator(),
-  latitude: 52,
-  longitude: -100,
-  zoom: 2.5,
+  // latitude: 52,
+  // longitude: -100,
+  // latitude: 49.6646529,
+  // longitude: -112.7979942,
+  longitude: -79.43598,
+  latitude: 43.65993,
+  zoom: 10,
+  // zoom: 2.5,
 }
 
 const propTypes = {
@@ -37,6 +42,7 @@ const propTypes = {
   legends: PropTypes.array,
   showTooltip: PropTypes.bool,
   tooltipNode: PropTypes.node,
+  getTooltip: PropTypes.func,
 }
 const defaultProps = {
   layers: [],
@@ -44,6 +50,7 @@ const defaultProps = {
   position: 'top-left',
   legends: [],
   showTooltip: false,
+  getTooltip: () => {},
 }
 
 const getPositionFromLngLat = ({ lngLat, ...viewState }) => new WebMercatorViewport({
@@ -58,6 +65,8 @@ const Map = ({
   legends,
   showTooltip,
   tooltipNode,
+  onClick,
+  getTooltip,
   ...tooltipProps
 }) => {
   const deckRef = useRef()
@@ -102,7 +111,8 @@ const Map = ({
         controller={ true }
         // NOTE: same structure as layer click
         // onHover={d => console.log('----> map hover', d)}
-        // onClick={d => console.log('----> map click', d)}
+        onClick={onClick}
+        getTooltip={getTooltip}
       >
         <StaticMap mapboxApiAccessToken={ process.env.MAPBOX_ACCESS_TOKEN } />
       </DeckGL>
