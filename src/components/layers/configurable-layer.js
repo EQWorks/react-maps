@@ -6,6 +6,110 @@ import { ScatterplotLayer, GeoJsonLayer } from 'deck.gl'
 import { useLegends, useMapData, useRadius, useFill, useElevation } from '../../hooks'
 
 
+// one object to generate options & controls
+// one object to be consumed
+// ====[TODO] what about a COMBO layer?
+/*
+  multi: true,
+  layers: [
+    {custom object},
+    'name of layer',
+  ]
+*/
+
+const latitudeFields = ['lat', 'latitude']
+const longitudeFields = ['lon', 'longitude']
+// ====[TODO] parseInt
+const validKey = (value, type) => value !== undefined && value !== null && typeof value === type
+// ====[TODO] actual geojson validation
+const hasGeoJson = row => Object.isObject(row) && Object.values(row).some(value => value.features !== null)
+
+const LAYER_CONFIG = {
+  // ====[TODO] tileLayer https://deck.gl/examples/tile-layer/
+  scatterplot: {
+    notAClass: false,
+    deckGLClass: ScatterplotLayer,
+    geometry: {
+      longitude: { source: 'field', type: 'number' },
+      latitude: { source: 'field', type: 'number' }
+    },
+    validator: (d) => Array.isArray(d) && d.every(row => latitudeFields.some(key => validKey(row[key], 'number')) &&  longitudeFields.some(key => validKey(row[key], 'number'))), 
+    // ====[NOTE] can always be based on a field
+    configurableVisualizations: {
+      radius: {
+        default: 10,
+        // ====[NOTE] if BASED_ON, then define a way to choose the range of values?
+        // radius -> range of floats, min -> max
+        // ====[TODO] look at d3 scales and the effect of supplying [1,4,6] as values of radii/elevations
+        type: 'number',
+        control: 'slider'
+      },
+      fill: {
+        default: [255, 0, 0],
+        // array of color options to use as fillColors
+        // ====[TODO] different templates for color choices? each a picker for d3 colors vs preset scales vs just lightness?
+        type: 'color',
+        control: 'select',
+        options: ['picker', 'scales']
+      },
+      strokeWidth: {
+        default: 1,
+        type: 'number',
+        control: 'slider'
+      },
+      strokeColor: {
+        default: [255, 0, 0],
+        type: 'color',
+        control: 'select',
+        options: ['picker', 'scales']
+      },
+    },
+    configurableInteractions: {
+      // onClick
+      // onHover
+      // highlight based on?
+      // labels
+    }
+  },
+  geojson: {
+    notAClass: false,
+    deckGLClass: GeoJsonLayer,
+    geometry: {
+      geojson: { source: 'field', type: 'object' },
+    },
+    validator: (d) => Array.isArray(d) && d.every(row => hasGeoJson(row)), 
+    configurableVisualizations: {
+      elevation: {
+        default: 10,
+        type: 'number',
+        control: 'slider'
+      },
+      fill: {
+        default: [255, 0, 0],
+        type: 'color',
+        control: 'select',
+        options: ['picker', 'scales']
+      },
+      strokeWidth: {
+        default: 1,
+        type: 'number',
+        control: 'slider'
+      },
+      strokeColor: {
+        default: [255, 0, 0],
+        type: 'color',
+        control: 'select',
+        options: ['picker', 'scales']
+      },
+    },
+    configurableInteractions: {
+      // onClick
+      // onHover
+      // highlight based on?
+      // labels
+    }
+  }
+}
 export const useConfigurableLayer = ({
   layerType,
   featureKeys,
