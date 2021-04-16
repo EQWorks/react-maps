@@ -11,6 +11,7 @@ setup(React.createElement)
 const LegendContainer = styled('div')(({ num_legends, position, typography }) => ({
   ...typography,
   display: 'flex',
+  flexDirection: 'column',
   position: 'absolute',
   zIndex: 9998,
   backgroundColor: 'rgba(255,255,255,0.9)',
@@ -19,6 +20,16 @@ const LegendContainer = styled('div')(({ num_legends, position, typography }) =>
   cursor: num_legends > 1 ? 'pointer' : 'default',
   ...position,
 }))
+
+const LegendTitle = styled('div')`
+  margin-bottom: 10px;
+  fontWeight: bold;
+`
+
+const LegendElements = styled('div')`
+  display: flex;
+  flex-direction: row;
+`
 
 const LegendTextContainer = styled('div')`
   display: flex;
@@ -70,13 +81,16 @@ const Legend = ({ position, legends, typography }) => {
           position={objPosition}
           typography={typography}
         >
-          <LegendSymbolContainer>
-            <LegendSymbol {...symbolProps} />
-          </LegendSymbolContainer>
-          <LegendTextContainer>
-            <LegendText legend-text-top={ top }>{max.toLocaleString()} {label}</LegendText>
-            <LegendText>{min.toLocaleString()} {label}</LegendText>
-          </LegendTextContainer>
+          <LegendTitle>{label}</LegendTitle>
+          <LegendElements>
+            <LegendSymbolContainer>
+              <LegendSymbol {...symbolProps} />
+            </LegendSymbolContainer>
+            <LegendTextContainer>
+              <LegendText legend-text-top={ top }>{max.toLocaleString()}</LegendText>
+              <LegendText>{min.toLocaleString()}</LegendText>
+            </LegendTextContainer>
+          </LegendElements>
         </LegendContainer>
       )}
     </>
