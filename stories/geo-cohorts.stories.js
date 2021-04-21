@@ -25,7 +25,10 @@ const useGeoCohortData = () => {
           } }).then(result => {
             response.push({
               ...result,
-              properties: elem,
+              properties: {
+                ...elem,
+                ...elem._id,
+              },
             })
           })
         } catch (error) {
