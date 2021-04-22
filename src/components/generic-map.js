@@ -43,6 +43,7 @@ const INIT_VIEW_STATE = {
 const propTypes = {
   layers: PropTypes.array,
   setDimensionsCb: PropTypes.func,
+  setHighlightObj: PropTypes.func,
   getTooltip: PropTypes.func,
   getCursor: PropTypes.func,
   viewStateOverride: PropTypes.object,
@@ -54,6 +55,7 @@ const propTypes = {
 const defaultProps = {
   layers: [],
   setDimensionsCb: () => {},
+  setHighlightObj: () => {},
   getTooltip: () => {},
   getCursor: () => {},
   viewStateOverride: {},
@@ -67,6 +69,7 @@ const defaultProps = {
 const Map = ({
   layers,
   setDimensionsCb,
+  setHighlightObj,
   getTooltip,
   getCursor,
   viewStateOverride,
@@ -92,6 +95,7 @@ const Map = ({
       pitch,
     }))
   }, [pitch, viewStateOverride])
+
   /**
    * finalOnHover - React hook that handles the onHover event for deck.gl map
    * @param { object } param - object of deck.gl onHover event
@@ -132,6 +136,11 @@ const Map = ({
         onHover={finalOnHover}
         getTooltip={getTooltip}
         getCursor={getCursor}
+        onClick={({ object }) => {
+          if(!object) {
+            setHighlightObj(null)
+          }
+        }}
       >
         <StaticMap mapboxApiAccessToken={mapboxApiAccessToken} />
       </DeckGL>
