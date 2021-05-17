@@ -46,6 +46,7 @@ const propTypes = {
   ]),
   showTooltip: PropTypes.bool,
   renderTooltip: PropTypes.func,
+  initViewState: PropTypes.object,
   pitch: PropTypes.number,
   setZoom: PropTypes.func,
   setViewportBBox: PropTypes.func,
@@ -62,6 +63,7 @@ const defaultProps = {
   showTooltip: false,
   renderTooltip: undefined,
   pitch: 0,
+  initViewState: {},
   setZoom: () => {},
   setViewportBBox: () => {},
 }
@@ -79,12 +81,13 @@ const Map = ({
   showTooltip,
   renderTooltip,
   pitch,
+  initViewState,
   setZoom,
   setViewportBBox,
   mapboxApiAccessToken,
 }) => {
   const deckRef = useRef()
-  const [viewState, setViewState] = useState(INIT_VIEW_STATE)
+  const [viewState, setViewState] = useState()
   const [hoverInfo, setHoverInfo] = useState({})
 
   useLayoutEffect(() => {
@@ -94,7 +97,7 @@ const Map = ({
       ...viewStateOverride,
       pitch,
     }))
-  }, [pitch, viewStateOverride])
+  }, [pitch, initViewState, viewStateOverride])
 
   /**
    * finalOnHover - React hook that handles the onHover event for deck.gl map
@@ -119,6 +122,7 @@ const Map = ({
         onLoad={() => {
           const { height, width } = deckRef.current.deck
           setDimensionsCb({ height, width })
+          setViewState(initViewState || INIT_VIEW_STATE)
         }}
         onResize={({ height, width }) => {
           setDimensionsCb({ height, width })
@@ -132,7 +136,10 @@ const Map = ({
           // send zoom and bbox coords to parent comp
           if (!isDragging || !inTransition || !isZooming || !isPanning || !isRotating) {
             setZoom(viewState.zoom)
-            setViewportBBox(new WebMercatorViewport(viewState).getBounds())
+            // send viewport bbox coords only for high value zooms
+            if (viewState.zoom >= 11) {
+              setViewportBBox(new WebMercatorViewport(viewState).getBounds())
+            }
           }
         }}
         initialViewState={viewState}
