@@ -75,7 +75,6 @@ const propTypes = {
   formatTooltipTitle: PropTypes.func,
   formatPropertyLabel: PropTypes.func,
   formatData: PropTypes.object,
-  setZoom: PropTypes.func,
   setViewportBBox: PropTypes.func,
 }
 
@@ -110,7 +109,6 @@ const defaultProps = {
   formatTooltipTitle: d => d,
   formatPropertyLabel: d => d,
   formatData: undefined,
-  setZoom: () => {},
   setViewportBBox: () => {},
 }
 
@@ -156,26 +154,41 @@ const GeoCohortMap = ({
   const [viewStateOverride, setViewOverride] = useState({})
   const [highlightObj, setHighlightObj] = useState(null)
   const [{ height, width }, setDimensions] = useState({})
-  const [zoom, setZoom] = useState()
+  const [zoom, setZoom] = useState(1)
 
-  const [activeData, activeLayer] = useMemo(() => zoom < 11 ?
-    [reportFSAData, 'FSALayer'] :
-    [reportGeoCohortData, 'GeoCohortLayer']
-  , [zoom, reportFSAData, reportGeoCohortData])
-
-  useEffect(() => {
-    if (width && height) {
-    // recenter based on clicked obj or data
-      const dataView = highlightObj ?
-        setView({ data: [highlightObj], width, height }) :
-        setView({ data: activeData, width, height })
-
-      setViewOverride(o => ({
-        ...o,
-        ...dataView,
-      }))
+  const [activeData, activeLayer] = useMemo(() => {
+    if (width && height && reportFSAData?.length) {
+      const { zoom: FSALayerZoom } = setView({ data: reportFSAData, width, height })
+      // reportFSAData is retrieved faster than reportGeoCohortData, so display it until the second loads
+      return (zoom < Math.max(FSALayerZoom + 1, 11) || !reportGeoCohortData?.length) ?
+        [reportFSAData, 'FSALayer'] :
+        [reportGeoCohortData, 'GeoCohortLayer']
     }
-  }, [highlightObj, activeData, activeLayer, height, width])
+    return []
+  }, [zoom, width, height, reportFSAData, reportGeoCohortData])
+
+  // set initial viewport to display all FSA polygons on the map
+  const initViewState = useMemo(() => {
+    if (reportFSAData?.length && width && height) {
+      return setView({ data: reportFSAData, width, height })
+    }
+    return null
+  }, [reportFSAData, height, width])
+
+  // useEffect(() => {
+  //   if (width && height && activeLayer) {
+  //   // recenter based on clicked obj or data
+  //     const dataView = highlightObj ?
+  //       setView({ data: [highlightObj], width, height }) :
+  //       setView({ data: reportFSAData, width, height })
+  // if (activeLayer === 'FSALayer') {
+  //   setViewOverride(o => ({
+  //     ...o,
+  //     ...dataView,
+  //   }))
+  // }
+  //   }
+  // }, [highlightObj, reportFSAData, activeLayer, height, width])
 
   /**
    * finalOnClick - React hook that handles layer's onClick events
@@ -404,6 +417,7 @@ const GeoCohortMap = ({
       )}
       legend={legend}
       pitch={pitch}
+      initViewState={initViewState}
       setZoom={setZoom}
       setViewportBBox={setViewportBBox}
       mapboxApiAccessToken={mapboxApiAccessToken}
