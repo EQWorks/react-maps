@@ -3,6 +3,8 @@ import React from 'react'
 import { storiesOf } from '@storybook/react'
 import POIMap from '../src/components/poi-map'
 import Map from '../src/components/generic-map'
+import CountryMap from '../src/components/country-map'
+import geoProvinceJson from './data/pois-polygon-province.json'
 
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN
 
@@ -15,4 +17,7 @@ storiesOf('Deck', module)
   ))
   .add('Generic Map', () => (
     <Map mapboxApiAccessToken={ MAPBOX_ACCESS_TOKEN }/>
+  ))
+  .add('Country Map', () => (
+    <CountryMap mapboxApiAccessToken={ MAPBOX_ACCESS_TOKEN } geoProvinceJson={ geoProvinceJson }/>
   ))
