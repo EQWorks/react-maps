@@ -65,7 +65,7 @@ const defaultProps = {
 }
 
 // DeckGL react component
-const CountryMap = ({
+const IntelligenceMap = ({
   layers,
   setDimensionsCb,
   setHighlightObj,
@@ -187,15 +187,15 @@ const CountryMap = ({
   )
 }
 
-CountryMap.propTypes = {
+IntelligenceMap.propTypes = {
   ...propTypes,
   ...StaticMap.propTypes,
   ...commonProps,
 }
-CountryMap.defaultProps = {
+IntelligenceMap.defaultProps = {
   ...defaultProps,
   ...StaticMap.defaultProps,
   ...commonDefaultProps,
 }
 
-export default CountryMap
+export default IntelligenceMap
