@@ -9,7 +9,7 @@ import {
 import { FlyToInterpolator, MapView } from '@deck.gl/core'
 import DeckGL from '@deck.gl/react'
 import { StaticMap } from 'react-map-gl'
-import { GeoJsonLayer } from '@deck.gl/layers';
+import { GeoJsonLayer, TextLayer } from '@deck.gl/layers';
 
 import { styled, setup } from 'goober'
 
@@ -30,9 +30,9 @@ const INIT_VIEW_STATE = {
   bearing: 0,
   transitionDuration: 1000,
   transitionInterpolator: new FlyToInterpolator(),
-  latitude: 57.411,
+  latitude: 61.411,
   longitude: -99,
-  zoom: 2.9,
+  zoom: 2.5,
 }
 
 const propTypes = {
@@ -92,41 +92,53 @@ const IntelligenceMap = ({
   }, []);
 
   const handleFillColor = d => {
-    let fillColor = [100, 105, 155, 50]
+    let fillColor = [153, 204, 255, 70]
     if (hoverProvince.object) {
       if (d.pr_code === hoverProvince.object.pr_code) {
-        fillColor = [100, 105, 155]
+        fillColor = [0, 128, 255, 99]
       } else {
-        fillColor = [100, 105, 155, 50]
+        fillColor = [153, 204, 255, 70]
       }
     } 
 
     return fillColor
   }
 
-  layers = new GeoJsonLayer({
-    id: 'polygon-layer',
-    data: GeoJson,
+  layers = [
+    new GeoJsonLayer({
+      id: 'polygon-layer',
+      data: GeoJson,
+      pickable: true,
+      stroked: false,
+      extruded: true,
+      filled: true,
+      wireframe: true,
+      getLineWidth: 1,
+      lineWidthMinPixels: 1,
+      lineWidthScale: 20,
+      getText: d => d.pr_name,
+      getLineWidth: 1,
+      getElevation: 30,
+      getFillColor: d => handleFillColor(d),
+      getRadius: 100,
+      updateTriggers: {
+        getFillColor: [hoverProvince]
+      },
+      onHover: d => setHoverProvince(d)
+  }),
+
+  new TextLayer({
+    id: 'text-layer',
+    data: 'https://raw.githubusercontent.com/Clavicus/Testing-Requests/master/canadian-provinces.json',
     pickable: true,
-    stroked: false,
-    extruded: true,
-    filled: true,
-    wireframe: true,
-    getLineWidth: 1,
-    lineWidthMinPixels: 1,
-    lineWidthScale: 20,
-    getLineColor: (data => {
-      return [80, 80, 80]
-    }),
-    getLineWidth: 1,
-    getElevation: 30,
-    getFillColor: d => handleFillColor(d),
-    getRadius: 100,
-    updateTriggers: {
-      getFillColor: [hoverProvince]
-    },
-    onHover: d => setHoverProvince(d)
-  });
+    getPosition: d => [d.longitude, d.latitude],
+    getText: d => d.short,
+    getSize: 30,
+    getAngle: 0,
+    getTextAnchor: 'middle',
+    getAlignmentBaseline: 'center',
+  }),
+];
 
   useLayoutEffect(() => {
     setViewState(o => ({
@@ -172,7 +184,7 @@ const IntelligenceMap = ({
         }}
         initialViewState={viewState}
         views={ MAP_VIEW }
-        layers={[layers]}
+        layers={layers}
         controller={true}
         onHover={finalOnHover}
         getTooltip={data => data.object && data.object.pr_name}
