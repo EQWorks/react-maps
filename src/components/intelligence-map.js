@@ -9,7 +9,7 @@ import {
 import { FlyToInterpolator, MapView } from '@deck.gl/core'
 import DeckGL from '@deck.gl/react'
 import { StaticMap } from 'react-map-gl'
-import { PolygonLayer } from '@deck.gl/layers';
+import { GeoJsonLayer } from '@deck.gl/layers';
 
 import { styled, setup } from 'goober'
 
@@ -104,18 +104,24 @@ const IntelligenceMap = ({
     return fillColor
   }
 
-  layers = new PolygonLayer({
+  layers = new GeoJsonLayer({
     id: 'polygon-layer',
     data: GeoJson,
     pickable: true,
-    stroked: true,
+    stroked: false,
+    extruded: true,
     filled: true,
     wireframe: true,
-    lineWidthMinPixels: 1,
-    getPolygon: d => d.geojson.coordinates,
-    getFillColor: d => handleFillColor(d),
-    getLineColor: [80, 80, 80],
     getLineWidth: 1,
+    lineWidthMinPixels: 1,
+    lineWidthScale: 20,
+    getLineColor: (data => {
+      return [80, 80, 80]
+    }),
+    getLineWidth: 1,
+    getElevation: 30,
+    getFillColor: d => handleFillColor(d),
+    getRadius: 100,
     updateTriggers: {
       getFillColor: [hoverProvince]
     },
@@ -169,7 +175,7 @@ const IntelligenceMap = ({
         layers={[layers]}
         controller={true}
         onHover={finalOnHover}
-        getTooltip={getTooltip}
+        getTooltip={data => data.object && data.object.pr_name}
         getCursor={getCursor}
         onClick={({ object }) => {
           if(!object) {

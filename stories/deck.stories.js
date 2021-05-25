@@ -4,7 +4,7 @@ import { storiesOf } from '@storybook/react'
 import POIMap from '../src/components/poi-map'
 import Map from '../src/components/generic-map'
 import IntelligenceMap from '../src/components/intelligence-map'
-import geoProvinceJson from './data/pois-polygon-province.json'
+import geoProvinceJson from './data/pois-geojson-province.json'
 
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN
 
