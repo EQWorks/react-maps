@@ -9,7 +9,7 @@ import {
 import { FlyToInterpolator, MapView } from '@deck.gl/core'
 import DeckGL from '@deck.gl/react'
 import { StaticMap } from 'react-map-gl'
-import { GeoJsonLayer, TextLayer } from '@deck.gl/layers';
+import { GeoJsonLayer, TextLayer } from '@deck.gl/layers'
 
 import { styled, setup } from 'goober'
 
@@ -89,7 +89,7 @@ const IntelligenceMap = ({
   
   useEffect(() => {
     setGeoJson(geoProvinceJson)
-  }, []);
+  }, [])
 
   const handleFillColor = d => {
     let fillColor = [153, 204, 255, 70]
@@ -113,7 +113,6 @@ const IntelligenceMap = ({
       extruded: true,
       filled: true,
       wireframe: true,
-      getLineWidth: 1,
       lineWidthMinPixels: 1,
       lineWidthScale: 20,
       getText: d => d.pr_name,
@@ -122,23 +121,23 @@ const IntelligenceMap = ({
       getFillColor: d => handleFillColor(d),
       getRadius: 100,
       updateTriggers: {
-        getFillColor: [hoverProvince]
+        getFillColor: [hoverProvince],
       },
-      onHover: d => setHoverProvince(d)
-  }),
+      onHover: d => setHoverProvince(d),
+    }),
 
-  new TextLayer({
-    id: 'text-layer',
-    data: 'https://raw.githubusercontent.com/Clavicus/Testing-Requests/master/canadian-provinces.json',
-    pickable: true,
-    getPosition: d => [d.longitude, d.latitude],
-    getText: d => d.short,
-    getSize: 30,
-    getAngle: 0,
-    getTextAnchor: 'middle',
-    getAlignmentBaseline: 'center',
-  }),
-];
+    new TextLayer({
+      id: 'text-layer',
+      data: 'https://raw.githubusercontent.com/Clavicus/Testing-Requests/master/canadian-provinces.json',
+      pickable: true,
+      getPosition: d => [d.longitude, d.latitude],
+      getText: d => d.short,
+      getSize: 30,
+      getAngle: 0,
+      getTextAnchor: 'middle',
+      getAlignmentBaseline: 'center',
+    }),
+  ]
 
   useLayoutEffect(() => {
     setViewState(o => ({
@@ -187,7 +186,7 @@ const IntelligenceMap = ({
         layers={layers}
         controller={true}
         onHover={finalOnHover}
-        getTooltip={data => data.object && data.object.pr_name}
+        getTooltip={getTooltip}
         getCursor={getCursor}
         onClick={({ object }) => {
           if(!object) {
