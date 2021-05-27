@@ -1,0 +1,93 @@
+[
+  {
+    "pr_code": "AB",
+    "pr_name": "Alberta",
+    "value": "2.5498%",
+    "latitude" : 53.9332706,
+    "longitude" : -116.5765035
+  },
+  {
+    "pr_code": "SK",
+    "pr_name": "Saskatchewan",
+    "value": "0.5688%",
+    "latitude" : 52.9399159,
+    "longitude" : -106.4508639
+  },
+  {
+    "pr_code": "MB",
+    "pr_name": "Manitoba",
+    "value": "0.5759%",
+    "latitude" : 53.7608608,
+    "longitude" : -98.8138763
+  },
+  {
+    "pr_code": "NL",
+    "pr_name": "Newfoundland And Labrador",
+    "value": "0.2049%",
+    "latitude" : 48.6064556,
+    "longitude" : -56.3330408
+  },
+  {
+    "pr_code": "PE",
+    "pr_name": "Prince Edward Island",
+    "value": "0.1483%",
+    "latitude" : 46.510712,
+    "longitude" : -63.4168136
+  },
+  {
+    "pr_code": "NS",
+    "pr_name": "Nova Scotia",
+    "value": "0.6938%",
+    "latitude" : 44.6819866,
+    "longitude" : -63.744311
+  },
+  {
+    "pr_code": "NT",
+    "pr_name": "Northwest Territories",
+    "value": "0.0028%",
+    "latitude" : 64.8255441,
+    "longitude" : -124.8457334
+  },
+  {
+    "pr_code": "NU",
+    "pr_name": "Nunavut",
+    "value": "0.0006%",
+    "latitude" : 64.800,
+    "longitude" : -92.957
+  },
+  {
+    "pr_code": "ON",
+    "pr_name": "Ontario",
+    "value": "28.9065%",
+    "latitude" : 51.253775,
+    "longitude" : -85.3232139
+  },
+  {
+    "pr_code": "NB",
+    "pr_name": "New Brunswick",
+    "value": "0.3696%",
+    "latitude" : 46.5653163,
+    "longitude" : -66.4619164
+  },
+  {
+    "pr_code": "YT",
+    "pr_name": "Yukon",
+    "value": "0.0055%",
+    "latitude" : 64.2823274,
+    "longitude" : -135
+  },
+  {
+    "pr_code": "BC",
+    "pr_name": "British Columbia",
+    "value": "8.2158%",
+    "latitude" : 53.7266683,
+    "longitude" : -127.6476206
+  },
+  {
+    "pr_code": "QC",
+    "pr_name": "Quebec",
+    "value": "7.7360%",
+    "latitude" : 52.9399159,
+    "longitude" : -73.5491361
+  }
+]

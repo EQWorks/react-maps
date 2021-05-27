@@ -5,8 +5,14 @@ import POIMap from '../src/components/poi-map'
 import Map from '../src/components/generic-map'
 import IntelligenceMap from '../src/components/intelligence-map'
 import geoProvinceJson from './data/pois-geojson-province.json'
+import geoProvinceValueJson from './data/geo-province-value.json'
+import geoCityJson from './data/pois-geojson-city.json'
 
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN
+
+const getTooltip = (data) => {
+  console.log(data);
+}
 
 storiesOf('Deck', module)
   .add('POIMap generic', () => (
@@ -19,5 +25,10 @@ storiesOf('Deck', module)
     <Map mapboxApiAccessToken={ MAPBOX_ACCESS_TOKEN }/>
   ))
   .add('Intellignce Map', () => (
-    <IntelligenceMap mapboxApiAccessToken={ MAPBOX_ACCESS_TOKEN } geoProvinceJson={ geoProvinceJson }/>
+    <IntelligenceMap 
+      mapboxApiAccessToken={ MAPBOX_ACCESS_TOKEN }
+      getTooltip={getTooltip}
+      geoProvinceJson={ geoProvinceJson } 
+      geoProvinceValueJson={ geoProvinceValueJson } 
+      geoCityJson={ geoCityJson }/>
   ))

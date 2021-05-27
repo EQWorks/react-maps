@@ -79,12 +79,14 @@ const IntelligenceMap = ({
   pitch,
   mapboxApiAccessToken,
   geoProvinceJson,
+  geoProvinceValueJson,
+  geoCityJson
 }) => {
   const deckRef = useRef()
   const [viewState, setViewState] = useState(INIT_VIEW_STATE)
   const [hoverInfo, setHoverInfo] = useState({})
-
-  const [GeoJson, setGeoJson] = useState(false)
+  var temp = []
+  const [GeoJson, setGeoJson] = useState([])
   const [hoverProvince, setHoverProvince] = useState({})
   
   useEffect(() => {
@@ -103,10 +105,10 @@ const IntelligenceMap = ({
 
     return fillColor
   }
-
+  
   layers = [
     new GeoJsonLayer({
-      id: 'polygon-layer',
+      id: 'outerGeo-layer',
       data: GeoJson,
       pickable: true,
       stroked: false,
@@ -115,7 +117,6 @@ const IntelligenceMap = ({
       wireframe: true,
       lineWidthMinPixels: 1,
       lineWidthScale: 20,
-      getText: d => d.pr_name,
       getLineWidth: 1,
       getElevation: 30,
       getFillColor: d => handleFillColor(d),
@@ -126,12 +127,28 @@ const IntelligenceMap = ({
       onHover: d => setHoverProvince(d),
     }),
 
+    new GeoJsonLayer({
+      id: 'innerGeo-layer',
+      data: geoCityJson,
+      pickable: true,
+      stroked: false,
+      extruded: true,
+      filled: true,
+      wireframe: true,
+      lineWidthMinPixels: 1,
+      lineWidthScale: 20,
+      getLineWidth: 1,
+      getElevation: 30,
+      getFillColor: [0, 0 , 0],
+      getRadius: 100,
+    }),
+
     new TextLayer({
       id: 'text-layer',
-      data: 'https://raw.githubusercontent.com/Clavicus/Testing-Requests/master/canadian-provinces.json',
+      data: geoProvinceValueJson,
       pickable: true,
       getPosition: d => [d.longitude, d.latitude],
-      getText: d => d.short,
+      getText: d => d.pr_code,
       getSize: 30,
       getAngle: 0,
       getTextAnchor: 'middle',
@@ -186,7 +203,7 @@ const IntelligenceMap = ({
         layers={layers}
         controller={true}
         onHover={finalOnHover}
-        getTooltip={getTooltip}
+        getTooltip={(object) => getTooltip(object)}
         getCursor={getCursor}
         onClick={({ object }) => {
           if(!object) {
