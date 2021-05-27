@@ -203,7 +203,7 @@ const IntelligenceMap = ({
         layers={layers}
         controller={true}
         onHover={finalOnHover}
-        getTooltip={(object) => getTooltip(object)}
+        getTooltip={(object) => object && getTooltip(object.object)}
         getCursor={getCursor}
         onClick={({ object }) => {
           if(!object) {

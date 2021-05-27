@@ -11,7 +11,14 @@ import geoCityJson from './data/pois-geojson-city.json'
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN
 
 const getTooltip = (data) => {
-  console.log(data);
+  let temp = data;
+  let toolTipText;
+
+  if (temp && temp.properties) {
+    toolTipText = `${temp.properties.CMANAME} ${temp.value}`
+  }
+
+  return toolTipText
 }
 
 storiesOf('Deck', module)
