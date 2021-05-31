@@ -13,11 +13,11 @@ import { getCircleRadiusCentroid } from '../src/shared/utils/index'
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN
 
 const getTooltip = (data) => {
-  let temp = data;
-  let toolTipText;
+  let temp = data
+  let toolTipText
 
   if (temp && temp.properties) {
-    toolTipText = `<span>${temp.properties.CMANAME}<br> ${temp.value}</span>`
+    toolTipText = `<span>${temp.properties.CMANAME} (${temp.value.toFixed(2)}%)</span>`
   }
 
   return toolTipText
@@ -34,18 +34,18 @@ const useGeoJsonCentroidData = (geoJson) => {
         let provinceValue = geoProvinceValueJson[index]
 
         try {
-          let centroid = await getCircleRadiusCentroid({polygon: el.geometry})
-          response.push({provinceValue ,centroid})
+          let centroid = await getCircleRadiusCentroid({ polygon: el.geometry })
+          response.push({ provinceValue ,centroid })
         } catch (error) {
           console.error(error)
         }
-      }));
+      }))
 
       setGeoCentroidData(response)
     }
 
     getGeoJsonCentroid(geoJson)
-  }, [])
+  })
 
   return geoCentroidData
 }

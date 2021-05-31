@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useLayoutEffect, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useLayoutEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 
 import {
@@ -86,16 +86,11 @@ const IntelligenceMap = ({
   const [viewState, setViewState] = useState(INIT_VIEW_STATE)
   const [hoverInfo, setHoverInfo] = useState({})
 
-  const [GeoJson, setGeoJson] = useState([])
   const [hoverProvince, setHoverProvince] = useState({})
   const [hoverCity, setHoverCity] = useState({})
-  
-  useEffect(() => {
-    setGeoJson(geoProvinceJson)
-  }, [])
 
   const handleFillColor = (type, d) => {
-    let fillColor;
+    let fillColor
 
     if (type === 'outer') {
       fillColor = [153, 204, 255, 70]
@@ -134,20 +129,15 @@ const IntelligenceMap = ({
   layers = [
     new GeoJsonLayer({
       id: 'outerGeo-layer',
-      data: GeoJson,
+      data: geoProvinceJson,
       pickable: true,
       stroked: false,
       extruded: true,
       filled: true,
       wireframe: true,
-      lineWidthMinPixels: 1,
-      lineWidthScale: 20,
-      getLineWidth: 1,
-      getElevation: 30,
       getFillColor: d => handleFillColor('outer', d),
-      getRadius: 100,
       updateTriggers: {
-        getFillColor: {hoverProvince},
+        getFillColor: { hoverProvince },
       },
       onHover: data => setHoverProvince(data),
     }),
@@ -160,16 +150,11 @@ const IntelligenceMap = ({
       extruded: true,
       filled: true,
       wireframe: true,
-      lineWidthMinPixels: 1,
-      lineWidthScale: 20,
-      getLineWidth: 1,
-      getElevation: 30,
       getFillColor: d => handleFillColor('inner', d),
-      getRadius: 100,
       updateTriggers: {
         getFillColor: [hoverCity],
       },
-      onHover: data => setHoverCity(data)
+      onHover: data => setHoverCity(data),
     }),
 
     new TextLayer({
@@ -237,6 +222,7 @@ const IntelligenceMap = ({
           style: {
             color: 'black',
             backgroundColor: 'white',
+            borderRadius: '10px',
           },
         }}
         getCursor={getCursor}
