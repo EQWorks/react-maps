@@ -13,7 +13,6 @@ import { GeoJsonLayer, TextLayer } from '@deck.gl/layers'
 
 import { styled, setup } from 'goober'
 
-
 setup(React.createElement)
 
 const MapContainer = styled('div')`
@@ -30,9 +29,9 @@ const INIT_VIEW_STATE = {
   bearing: 0,
   transitionDuration: 1000,
   transitionInterpolator: new FlyToInterpolator(),
-  latitude: 61.411,
-  longitude: -99,
-  zoom: 2.5,
+  latitude: 60,
+  longitude: -96,
+  zoom: 2.6,
 }
 
 const propTypes = {
@@ -80,28 +79,54 @@ const IntelligenceMap = ({
   mapboxApiAccessToken,
   geoProvinceJson,
   geoProvinceValueJson,
-  geoCityJson
+  geoProvinceCentroidJson,
+  geoCityJson,
 }) => {
   const deckRef = useRef()
   const [viewState, setViewState] = useState(INIT_VIEW_STATE)
   const [hoverInfo, setHoverInfo] = useState({})
-  var temp = []
+
   const [GeoJson, setGeoJson] = useState([])
   const [hoverProvince, setHoverProvince] = useState({})
+  const [hoverCity, setHoverCity] = useState({})
   
   useEffect(() => {
     setGeoJson(geoProvinceJson)
   }, [])
 
-  const handleFillColor = d => {
-    let fillColor = [153, 204, 255, 70]
-    if (hoverProvince.object) {
-      if (d.pr_code === hoverProvince.object.pr_code) {
-        fillColor = [0, 128, 255, 99]
-      } else {
-        fillColor = [153, 204, 255, 70]
-      }
+  const handleFillColor = (type, d) => {
+    let fillColor;
+
+    if (type === 'outer') {
+      fillColor = [153, 204, 255, 70]
+
+      geoProvinceValueJson.forEach(el => {
+        if (hoverProvince.object) {
+          if (d.pr_code === hoverProvince.object.pr_code) {
+            fillColor = [0, 0, 0, 50]
+          } 
+          else if (d.pr_code === el.pr_code) {
+            el.value > 1 &&
+            (fillColor = [0, 128, 255, 80 + el.value])
+          }
+        } 
+        else if (d.pr_code === el.pr_code) {
+          el.value > 1 &&
+          (fillColor = [0, 128, 255, 80 + el.value])
+        }
+      })
     } 
+    else if (type === 'inner') {
+      fillColor = [51, 51, 255, 90]
+
+      if (hoverCity.object) {
+        if (d.properties.CMANAME === hoverCity.object.properties.CMANAME) {
+          fillColor = [51, 51, 255, 255]
+        } else {
+          fillColor = [51, 51, 255, 90]
+        }
+      }
+    }
 
     return fillColor
   }
@@ -119,12 +144,12 @@ const IntelligenceMap = ({
       lineWidthScale: 20,
       getLineWidth: 1,
       getElevation: 30,
-      getFillColor: d => handleFillColor(d),
+      getFillColor: d => handleFillColor('outer', d),
       getRadius: 100,
       updateTriggers: {
-        getFillColor: [hoverProvince],
+        getFillColor: {hoverProvince},
       },
-      onHover: d => setHoverProvince(d),
+      onHover: data => setHoverProvince(data),
     }),
 
     new GeoJsonLayer({
@@ -139,17 +164,21 @@ const IntelligenceMap = ({
       lineWidthScale: 20,
       getLineWidth: 1,
       getElevation: 30,
-      getFillColor: [0, 0 , 0],
+      getFillColor: d => handleFillColor('inner', d),
       getRadius: 100,
+      updateTriggers: {
+        getFillColor: [hoverCity],
+      },
+      onHover: data => setHoverCity(data)
     }),
 
     new TextLayer({
       id: 'text-layer',
-      data: geoProvinceValueJson,
-      pickable: true,
-      getPosition: d => [d.longitude, d.latitude],
-      getText: d => d.pr_code,
-      getSize: 30,
+      data: geoProvinceCentroidJson,
+      pickable: false,
+      getPosition: d => d.centroid.coordinates,
+      getText: d => d.provinceValue.pr_code,
+      getSize: 20,
       getAngle: 0,
       getTextAnchor: 'middle',
       getAlignmentBaseline: 'center',
@@ -203,7 +232,13 @@ const IntelligenceMap = ({
         layers={layers}
         controller={true}
         onHover={finalOnHover}
-        getTooltip={(object) => object && getTooltip(object.object)}
+        getTooltip={(object) => object && getTooltip(object.object) && {
+          html: getTooltip(object.object),
+          style: {
+            color: 'black',
+            backgroundColor: 'white',
+          },
+        }}
         getCursor={getCursor}
         onClick={({ object }) => {
           if(!object) {
