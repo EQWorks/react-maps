@@ -1,17 +1,16 @@
 import React, { useState, useCallback, useLayoutEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 
-import {
-  commonProps,
-  commonDefaultProps,
-} from '../shared/map-props'
-
 import { FlyToInterpolator, MapView } from '@deck.gl/core'
 import DeckGL from '@deck.gl/react'
 import { StaticMap } from 'react-map-gl'
 import { GeoJsonLayer, TextLayer } from '@deck.gl/layers'
-
 import { styled, setup } from 'goober'
+
+import {
+  commonProps,
+  commonDefaultProps,
+} from '../../shared/map-props'
 
 setup(React.createElement)
 
@@ -100,13 +99,11 @@ const IntelligenceMap = ({
           if (d.pr_code === hoverProvince.object.pr_code) {
             fillColor = [0, 0, 0, 50]
           } 
-          else if (d.pr_code === el.pr_code) {
-            el.value > 1 &&
+          else if (d.pr_code === el.pr_code && el.value > 1) {
             (fillColor = [0, 128, 255, 80 + el.value])
           }
         } 
-        else if (d.pr_code === el.pr_code) {
-          el.value > 1 &&
+        else if (d.pr_code === el.pr_code && el.value > 1) {
           (fillColor = [0, 128, 255, 80 + el.value])
         }
       })
@@ -115,10 +112,8 @@ const IntelligenceMap = ({
       fillColor = [51, 51, 255, 90]
 
       if (hoverCity.object) {
-        if (d.properties.CMANAME === hoverCity.object.properties.CMANAME) {
+        if (d?.properties?.CMANAME === hoverCity.object.properties?.CMANAME) {
           fillColor = [51, 51, 255, 255]
-        } else {
-          fillColor = [51, 51, 255, 90]
         }
       }
     }
@@ -185,7 +180,7 @@ const IntelligenceMap = ({
    * @param { object } param.hoverInfo - info of hovered object on map
    */
   const finalOnHover = useCallback(hoverInfo => {
-    if (onHover) {
+    if (typeof onHover === 'function') {
       onHover(hoverInfo)
     }
     if (showTooltip && hoverInfo?.object) {
