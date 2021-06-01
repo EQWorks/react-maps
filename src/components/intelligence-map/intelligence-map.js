@@ -24,12 +24,12 @@ const MAP_VIEW = new MapView({ repeat: true })
 
 
 const INIT_VIEW_STATE = {
-  pitch: 0,
-  bearing: 0,
+  pitch: 100,
+  bearing: -2,
   transitionDuration: 1000,
   transitionInterpolator: new FlyToInterpolator(),
   latitude: 60,
-  longitude: -96,
+  longitude: -94,
   zoom: 2.6,
 }
 
@@ -157,8 +157,9 @@ const IntelligenceMap = ({
       data: geoProvinceCentroidJson,
       pickable: false,
       getPosition: d => d.centroid.coordinates,
-      getText: d => d.provinceValue.pr_code,
-      getSize: 20,
+      getText: d => `${d.provinceValue.pr_name}\n ${d.provinceValue.value}%`,
+      getPixelOffset: d => [d.offset.x, d.offset.y],
+      getSize: 18,
       getAngle: 0,
       getTextAnchor: 'middle',
       getAlignmentBaseline: 'center',
@@ -210,7 +211,7 @@ const IntelligenceMap = ({
         initialViewState={viewState}
         views={ MAP_VIEW }
         layers={layers}
-        controller={true}
+        controller={false}
         onHover={finalOnHover}
         getTooltip={(object) => object && getTooltip(object.object) && {
           html: getTooltip(object.object),
@@ -218,6 +219,7 @@ const IntelligenceMap = ({
             color: 'black',
             backgroundColor: 'white',
             borderRadius: '10px',
+            border: '1px solid black',
           },
         }}
         getCursor={getCursor}
@@ -227,7 +229,7 @@ const IntelligenceMap = ({
           }
         }}
       >
-        <StaticMap mapboxApiAccessToken={mapboxApiAccessToken}/>
+        <StaticMap mapStyle={'mapbox://styles/chiuleung/ckon6rngz3wpg17pkwuj12hrx'} mapboxApiAccessToken={mapboxApiAccessToken}/>
       </DeckGL>
       {legend}
       {showTooltip && hoverInfo?.object && typeof renderTooltip === 'function' && (
