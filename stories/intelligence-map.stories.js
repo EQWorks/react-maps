@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react'
 import { storiesOf } from '@storybook/react'
-import IntelligenceMap from '../src/components/intelligence-map/intelligence-map'
+import IntelligenceMap from '../src/components/intelligence-map'
 import geoProvinceJson from './data/geo-province.json'
 import geoProvinceValueJson from './data/geo-province-value.json'
 import geoCityJson from './data/geo-province-city.json'

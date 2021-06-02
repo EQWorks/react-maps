@@ -10,7 +10,7 @@ import { styled, setup } from 'goober'
 import {
   commonProps,
   commonDefaultProps,
-} from '../../shared/map-props'
+} from '../shared/map-props'
 
 setup(React.createElement)
 
