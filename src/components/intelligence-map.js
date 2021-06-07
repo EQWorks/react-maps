@@ -1,90 +1,44 @@
-import React, { useState, useCallback, useLayoutEffect, useRef } from 'react'
+import React, { useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
 
-import { FlyToInterpolator, MapView } from '@deck.gl/core'
-import DeckGL from '@deck.gl/react'
-import { StaticMap } from 'react-map-gl'
+import { FlyToInterpolator } from '@deck.gl/core'
 import { GeoJsonLayer, TextLayer } from '@deck.gl/layers'
-import { styled, setup } from 'goober'
+
+import Map from './generic-map'
 
 import {
   commonProps,
   commonDefaultProps,
 } from '../shared/map-props'
 
-setup(React.createElement)
-
-const MapContainer = styled('div')`
-  height: 100%;
-  width: 100%;
-  position: absolute;
-`
-
-const MAP_VIEW = new MapView({ repeat: true })
-
-
 const INIT_VIEW_STATE = {
-  pitch: 100,
-  bearing: -2,
+  pitch: 0,
+  bearing: 1,
   transitionDuration: 1000,
   transitionInterpolator: new FlyToInterpolator(),
-  latitude: 60,
+  latitude: 58,
   longitude: -94,
   zoom: 2.6,
 }
 
 const propTypes = {
-  layers: PropTypes.array,
-  setDimensionsCb: PropTypes.func,
-  setHighlightObj: PropTypes.func,
-  getTooltip: PropTypes.func,
-  getCursor: PropTypes.func,
   viewStateOverride: PropTypes.object,
-  legend: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.bool,
-  ]),
-  showTooltip: PropTypes.bool,
-  renderTooltip: PropTypes.func,
   pitch: PropTypes.number,
 }
 
 const defaultProps = {
-  layers: [],
-  setDimensionsCb: () => {},
-  setHighlightObj: () => {},
-  getTooltip: () => {},
-  getCursor: () => {},
   viewStateOverride: {},
-  legend: undefined,
-  showTooltip: false,
-  renderTooltip: undefined,
   pitch: 0,
 }
 
 // DeckGL react component
 const IntelligenceMap = ({
-  layers,
-  setDimensionsCb,
-  setHighlightObj,
-  getTooltip,
-  getCursor,
-  viewStateOverride,
-  legend,
-  onHover,
-  showTooltip,
-  renderTooltip,
-  pitch,
   mapboxApiAccessToken,
   geoProvinceJson,
   geoProvinceValueJson,
   geoProvinceCentroidJson,
-  geoCityJson,
+  geoCityJson
 }) => {
-  const deckRef = useRef()
-  const [viewState, setViewState] = useState(INIT_VIEW_STATE)
-  const [hoverInfo, setHoverInfo] = useState({})
-
   const [hoverProvince, setHoverProvince] = useState({})
   const [hoverCity, setHoverCity] = useState({})
 
@@ -120,133 +74,91 @@ const IntelligenceMap = ({
 
     return fillColor
   }
+
+  const getTooltip = (data) => {
+    let temp = data
+    let toolTipText
+
+    if (temp && temp.properties) {
+      toolTipText = `<span>${temp.properties.CMANAME} (${temp.value.toFixed(2)}%)</span>`
+    }
+
+    return toolTipText
+  }
   
-  layers = [
-    new GeoJsonLayer({
-      id: 'outerGeo-layer',
-      data: geoProvinceJson,
-      pickable: true,
-      stroked: false,
-      extruded: true,
-      filled: true,
-      wireframe: true,
-      getFillColor: d => handleFillColor('outer', d),
-      updateTriggers: {
-        getFillColor: { hoverProvince },
-      },
-      onHover: data => setHoverProvince(data),
-    }),
+  const layers = useMemo(() => { 
+    return [
+      new GeoJsonLayer({
+        id: 'outerGeo-layer',
+        data: geoProvinceJson,
+        pickable: true,
+        stroked: false,
+        extruded: true,
+        filled: true,
+        wireframe: true,
+        getFillColor: d => handleFillColor('outer', d),
+        updateTriggers: {
+          getFillColor: { hoverProvince },
+        },
+        onHover: data => setHoverProvince(data),
+      }),
 
-    new GeoJsonLayer({
-      id: 'innerGeo-layer',
-      data: geoCityJson,
-      pickable: true,
-      stroked: false,
-      extruded: true,
-      filled: true,
-      wireframe: true,
-      getFillColor: d => handleFillColor('inner', d),
-      updateTriggers: {
-        getFillColor: [hoverCity],
-      },
-      onHover: data => setHoverCity(data),
-    }),
+      new GeoJsonLayer({
+        id: 'innerGeo-layer',
+        data: geoCityJson,
+        pickable: true,
+        stroked: false,
+        extruded: true,
+        filled: true,
+        wireframe: true,
+        getFillColor: d => handleFillColor('inner', d),
+        updateTriggers: {
+          getFillColor: [hoverCity],
+        },
+        onHover: data => setHoverCity(data),
+      }),
 
-    new TextLayer({
-      id: 'text-layer',
-      data: geoProvinceCentroidJson,
-      pickable: false,
-      getPosition: d => d.centroid.coordinates,
-      getText: d => `${d.provinceValue.pr_name}\n ${d.provinceValue.value}%`,
-      getPixelOffset: d => [d.offset.x, d.offset.y],
-      getSize: 18,
-      getAngle: 0,
-      getTextAnchor: 'middle',
-      getAlignmentBaseline: 'center',
-    }),
-  ]
-
-  useLayoutEffect(() => {
-    setViewState(o => ({
-      ...INIT_VIEW_STATE,
-      ...o,
-      ...viewStateOverride,
-      pitch,
-    }))
-  }, [pitch, viewStateOverride])
-
-  /**
-   * finalOnHover - React hook that handles the onHover event for deck.gl map
-   * @param { object } param - object of deck.gl onHover event
-   * @param { object } param.hoverInfo - info of hovered object on map
-   */
-  const finalOnHover = useCallback(hoverInfo => {
-    if (typeof onHover === 'function') {
-      onHover(hoverInfo)
-    }
-    if (showTooltip && hoverInfo?.object) {
-      setHoverInfo(hoverInfo)
-    } else {
-      setHoverInfo(null)
-    }
-  }, [onHover, showTooltip])
+      new TextLayer({
+        id: 'text-layer',
+        data: geoProvinceCentroidJson,
+        pickable: false,
+        getPosition: d => d.centroid.coordinates,
+        getText: d => `${d.provinceValue.pr_name}\n ${d.provinceValue.value}%`,
+        getPixelOffset: d => [d.offset.x, d.offset.y],
+        getSize: 18,
+        getAngle: 0,
+        getTextAnchor: 'middle',
+        getAlignmentBaseline: 'center',
+      }),
+    ]
+  })
 
   return (
-    <MapContainer>
-      <DeckGL
-        ref={deckRef}
-        onLoad={() => {
-          const { height, width } = deckRef.current.deck
-          setDimensionsCb({ height, width })
-        }}
-        onResize={({ height, width }) => {
-          setDimensionsCb({ height, width })
-        }}
-        onViewStateChange={o => {
-          const { viewState } = o
-          setViewState(viewState)
-          // makes tooltip info disappear when we click and zoom in on a location
-          setHoverInfo(null)
-        }}
-        initialViewState={viewState}
-        views={ MAP_VIEW }
-        layers={layers}
-        controller={false}
-        onHover={finalOnHover}
-        getTooltip={(object) => object && getTooltip(object.object) && {
-          html: getTooltip(object.object),
-          style: {
-            color: 'black',
-            backgroundColor: 'white',
-            borderRadius: '10px',
-            border: '1px solid black',
-          },
-        }}
-        getCursor={getCursor}
-        onClick={({ object }) => {
-          if(!object) {
-            setHighlightObj(null)
-          }
-        }}
-      >
-        <StaticMap mapStyle={'mapbox://styles/chiuleung/ckon6rngz3wpg17pkwuj12hrx'} mapboxApiAccessToken={mapboxApiAccessToken}/>
-      </DeckGL>
-      {legend}
-      {showTooltip && hoverInfo?.object && typeof renderTooltip === 'function' && (
-        renderTooltip({ hoverInfo })
-      )}
-    </MapContainer>
+    <Map 
+      layers={layers}
+      getTooltip={(object) => object && getTooltip(object.object) && {
+        html: getTooltip(object.object),
+        style: {
+          color: 'black',
+          backgroundColor: 'white',
+          borderRadius: '10px',
+          border: '1px solid black',
+        },
+      }}
+      controller={false}
+      viewStateOverride={INIT_VIEW_STATE}
+      mapboxApiAccessToken={mapboxApiAccessToken}
+      mapStyle="mapbox://styles/chiuleung/ckon6rngz3wpg17pkwuj12hrx"
+    />
   )
 }
 
 IntelligenceMap.propTypes = {
   ...propTypes,
-  ...StaticMap.propTypes,
   ...commonProps,
 }
 IntelligenceMap.defaultProps = {
   ...defaultProps,
-  ...StaticMap.defaultProps,
   ...commonDefaultProps,
 }
 

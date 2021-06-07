@@ -10,17 +10,6 @@ import { getCircleRadiusCentroid } from '../src/shared/utils/index'
 
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN
 
-const getTooltip = (data) => {
-  let temp = data
-  let toolTipText
-
-  if (temp && temp.properties) {
-    toolTipText = `<span>${temp.properties.CMANAME} (${temp.value.toFixed(2)}%)</span>`
-  }
-
-  return toolTipText
-}
-
 const useGeoJsonCentroidData = () => {
   const [geoCentroidData, setGeoCentroidData] = useState([])
 
@@ -55,10 +44,11 @@ storiesOf('Intellignce Map', module)
     return (
       <IntelligenceMap 
         mapboxApiAccessToken={ MAPBOX_ACCESS_TOKEN }
-        getTooltip={getTooltip}
         geoProvinceJson={ geoProvinceJson }
         geoProvinceValueJson={ geoProvinceValueJson }
         geoProvinceCentroidJson={ centroidJson } 
-        geoCityJson={ geoCityJson }/>
+        geoCityJson={ geoCityJson }
+        data={ geoProvinceJson }
+      />
     )
   })

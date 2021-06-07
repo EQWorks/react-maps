@@ -50,6 +50,7 @@ const propTypes = {
   pitch: PropTypes.number,
   setZoom: PropTypes.func,
   setCurrentViewport: PropTypes.func,
+  controller: PropTypes.bool
 }
 
 const defaultProps = {
@@ -66,6 +67,7 @@ const defaultProps = {
   initViewState: {},
   setZoom: () => {},
   setCurrentViewport: () => {},
+  controller: true
 }
 
 // DeckGL react component
@@ -85,6 +87,8 @@ const Map = ({
   setZoom,
   setCurrentViewport,
   mapboxApiAccessToken,
+  mapStyle,
+  controller
 }) => {
   const deckRef = useRef()
   const [viewState, setViewState] = useState()
@@ -148,7 +152,7 @@ const Map = ({
         initialViewState={viewState}
         views={ MAP_VIEW }
         layers={layers}
-        controller={true}
+        controller={controller}
         onHover={finalOnHover}
         getTooltip={getTooltip}
         getCursor={getCursor}
@@ -158,7 +162,7 @@ const Map = ({
           }
         }}
       >
-        <StaticMap mapboxApiAccessToken={mapboxApiAccessToken} />
+        <StaticMap mapStyle={mapStyle && mapStyle} mapboxApiAccessToken={mapboxApiAccessToken} />
       </DeckGL>
       {legend}
       {showTooltip && hoverInfo?.object && typeof renderTooltip === 'function' && (
