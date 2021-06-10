@@ -61,3 +61,35 @@ export const getCursor = ({ layers } = {}) => {
   }
   return ({ isDragging, isHovering }) => (isDragging ? 'grabbing' : (isHovering ? 'pointer' : 'grab'))
 }
+
+export const getFillColor = (value, max, min) => {
+  const totalDiff = max - min
+  if (!value) {
+    return 'hsl(203, 93%, 90%)'
+  }
+  if (totalDiff === 0) {
+    return 'hsl(203, 93%, 55%)'
+  }
+
+  const minLightness = 55
+  const maxLightness = 90
+  const totalLightnessDiff = maxLightness - minLightness
+  const lightness = maxLightness - ((value - min) / totalDiff * totalLightnessDiff)
+  return `hsl(203, 93%, ${lightness}%)`
+}
+
+export const getMetFillColor = (value, max, min) => {
+  const totalDiff = max - min
+  if (!value) {
+    return 'hsl(210, 63%, 55%)'
+  }
+  if (totalDiff === 0) {
+    return 'hsl(210, 63%, 26%)'
+  }
+
+  const minLightness = 26
+  const maxLightness = 55
+  const totalLightnessDiff = maxLightness - minLightness
+  const lightness = maxLightness - ((value - min) / totalDiff * totalLightnessDiff)
+  return `hsl(210, 63%, ${lightness}%)`
+}
