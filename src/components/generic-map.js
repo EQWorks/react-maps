@@ -88,7 +88,7 @@ const Map = ({
   setCurrentViewport,
   mapboxApiAccessToken,
   mapStyle,
-  controller
+  controller,
 }) => {
   const deckRef = useRef()
   const [viewState, setViewState] = useState()

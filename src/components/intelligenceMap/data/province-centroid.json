@@ -1,0 +1,95 @@
+{
+  "centroid": [
+    {
+      "properties": {
+        "NAME": "Alberta",
+        "CODE": "AB"
+      },
+      "coordinates": [-114.921, 56.535]
+    },
+    {
+      "properties": {
+        "NAME": "Saskatchewan",
+        "CODE": "SK"
+      },
+      "coordinates": [-105.571, 54.463]
+    },
+    {
+      "properties": {
+        "NAME": "Manitoba",
+        "CODE": "MB"
+      },
+      "coordinates": [-97.135, 55.534]
+    },
+    {
+      "properties": {
+        "NAME": "Newfoundland & Labrador",
+        "CODE": "NL"
+      },
+      "coordinates": [-60.642, 54.945]
+    },
+    {
+      "properties": {
+      "NAME": "PEI",
+      "CODE": "PE"
+      },
+      "coordinates": [-61.304, 48.007]
+    },
+    {
+      "properties": {
+        "NAME": "Nova Scotia",
+        "CODE": "NS"
+      },
+      "coordinates": [-61.642, 43.522]
+    },
+    {
+      "properties": {
+        "NAME": "Northwest Territories",
+        "CODE": "NT"
+      },
+      "coordinates": [-118.069, 63.099]
+    },
+    {
+      "properties": {
+        "NAME": "Nunavut",
+        "CODE": "NU"
+      },
+      "coordinates": [-97.063, 62.997]
+    },
+    {
+      "properties": {
+        "NAME": "Ontario",
+        "CODE": "ON"
+      },
+      "coordinates": [-87.572, 51.515]
+    },
+    {
+      "properties": {
+        "NAME": "New Brunswick",
+        "CODE": "NB"
+      },
+      "coordinates": [-70.959, 45.570]
+    },
+    {
+      "properties": {
+        "NAME": "Yukon Territory",
+        "CODE": "YT"
+      },
+      "coordinates": [-134.181, 61.766]
+    },
+    {
+      "properties": {
+        "NAME": "British Columbia",
+        "CODE": "BC"
+      },
+      "coordinates": [-126.443, 54.904]
+    },
+    {
+      "properties": {
+        "NAME": "Quebec",
+        "CODE": "QC"
+      },
+      "coordinates": [-73.504, 51.220]
+    }
+  ]
+}

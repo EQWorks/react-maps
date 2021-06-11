@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 import { FlyToInterpolator } from '@deck.gl/core'
@@ -13,11 +13,10 @@ import {
 } from '../../shared/map-props'
 
 const INIT_VIEW_STATE = {
-  pitch: 0,
-  bearing: 0,
+  bearing: -4,
   transitionDuration: 1000,
   transitionInterpolator: new FlyToInterpolator(),
-  latitude: 58,
+  latitude: 57,
   longitude: -94,
   zoom: 2.6,
 }
@@ -38,6 +37,7 @@ const IntelligenceMap = ({
   geoProvinceCentroidJson,
   intelligenceProvince,
   intelligenceCity,
+  pitch,
 }) => {
   const [hoverProvince, setHoverProvince] = useState({})
   const [hoverCity, setHoverCity] = useState({})
@@ -67,7 +67,7 @@ const IntelligenceMap = ({
   })
 
   const handleFillColor = (type, d) => {
-    let fillColor;
+    let fillColor
 
     if (type === 'outer') {
       fillColor = getProvinceFillColor(d.value.total, maxP, minP)
@@ -101,53 +101,50 @@ const IntelligenceMap = ({
     return toolTipText
   }
   
-  const layers = useMemo(() => { 
-    return [
-      new GeoJsonLayer({
-        id: 'outerGeo-layer',
-        data: intelligenceProvince,
-        pickable: true,
-        stroked: true,
-        filled: true,
-        getLineColor: [0, 0, 0],
-        lineWidthMinPixels: 1,
-        getFillColor: d => handleFillColor('outer', d),
-        updateTriggers: {
-          getFillColor: { hoverProvince },
-        },
-        onHover: data => setHoverProvince(data),
-      }),
+  const layers = [
+    new GeoJsonLayer({
+      id: 'outerGeo-layer',
+      data: intelligenceProvince,
+      pickable: true,
+      stroked: true,
+      filled: true,
+      getLineColor: [0, 0, 0],
+      lineWidthMinPixels: 1,
+      getFillColor: d => handleFillColor('outer', d),
+      updateTriggers: {
+        getFillColor: { hoverProvince },
+      },
+      onHover: data => setHoverProvince(data),
+    }),
 
-      new GeoJsonLayer({
-        id: 'innerGeo-layer',
-        data: intelligenceCity,
-        pickable: true,
-        stroked: true,
-        filled: true,
-        getLineColor: [0, 0, 0],
-        lineWidthMinPixels: 1,
-        getFillColor: d => handleFillColor('inner', d),
-        updateTriggers: {
-          getFillColor: [hoverCity],
-        },
-        onHover: data => setHoverCity(data),
-      }),
+    new GeoJsonLayer({
+      id: 'innerGeo-layer',
+      data: intelligenceCity,
+      pickable: true,
+      stroked: true,
+      filled: true,
+      getLineColor: [0, 0, 0],
+      lineWidthMinPixels: 1,
+      getFillColor: d => handleFillColor('inner', d),
+      updateTriggers: {
+        getFillColor: [hoverCity],
+      },
+      onHover: data => setHoverCity(data),
+    }),
 
-      new TextLayer({
-        id: 'text-layer',
-        data: geoProvinceCentroidJson,
-        billboard: false,
-        pickable: false,
-        getPosition: d => d.centroid.coordinates,
-        getText: d => `${d.name}\n ${d.value.percentage}%`,
-        getPixelOffset: d => [d.offset.x, d.offset.y],
-        getSize: 12,
-        getAngle: 0,
-        getTextAnchor: 'middle',
-        getAlignmentBaseline: 'center',
-      }),
-    ]
-  })
+    new TextLayer({
+      id: 'text-layer',
+      data: geoProvinceCentroidJson,
+      billboard: false,
+      pickable: false,
+      getPosition: d => d.coordinates,
+      getText: d => `${d.properties.NAME}\n ${d.value.percentage}%`,
+      getSize: 12,
+      getAngle: 0,
+      getTextAnchor: 'middle',
+      getAlignmentBaseline: 'center',
+    }),
+  ]
 
   return (
     <Map 
@@ -162,7 +159,7 @@ const IntelligenceMap = ({
         },
       }}
       controller={false}
-      pitch={20}
+      pitch={pitch}
       viewStateOverride={INIT_VIEW_STATE}
       mapboxApiAccessToken={mapboxApiAccessToken}
       mapStyle="mapbox://styles/chiuleung/ckon6rngz3wpg17pkwuj12hrx"
