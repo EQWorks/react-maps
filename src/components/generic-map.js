@@ -50,7 +50,7 @@ const propTypes = {
   pitch: PropTypes.number,
   setZoom: PropTypes.func,
   setCurrentViewport: PropTypes.func,
-  controller: PropTypes.bool
+  controller: PropTypes.bool,
 }
 
 const defaultProps = {
@@ -67,7 +67,7 @@ const defaultProps = {
   initViewState: {},
   setZoom: () => {},
   setCurrentViewport: () => {},
-  controller: true
+  controller: true,
 }
 
 // DeckGL react component
