@@ -158,16 +158,18 @@ export const createCircleFromPointRadius = ({ centre, radius }) => {
  * @return { object } - the values of the circle's radius and centroid coordinates
  */
 export const getCircleRadiusCentroid = ({ polygon }) => {
-  polygon = {
-    ...polygon,
-    type: 'Feature',
-  }
+  // polygon = {
+  //   ...polygon,
+  //   type: 'Feature',
+  // }
+
   const centroid = tCentroid(polygon)
   const bound = tBBox(polygon)
   let radius = tDistance(centroid, point(([(bound[0] + bound[2]) / 2, bound[3]])))
   // return radius in meters
   let coordinates = centroid.geometry.coordinates
   radius = Math.round(radius * 1000000) / 1000
+
   return { radius, coordinates }
 }
 
