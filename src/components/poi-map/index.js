@@ -86,7 +86,7 @@ const MapContainer = styled('div', forwardRef)`
 const INIT_VIEW_STATE = {
   pitch: 25,
   bearing: 0,
-  transitionDuration: 2000,
+  transitionDuration: 1000,
   transitionInterpolator: new FlyToInterpolator(),
   latitude: 52,
   longitude: -100,
