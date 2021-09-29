@@ -64,3 +64,17 @@ export const isClusterZoomLevel = ({ layerVisibleData, viewportBBOX, zoom }) => 
     return Boolean(clusterData.find(elem => elem?.properties?.cluster))
   }
 }
+
+/**
+ * arrayEquals - determines if an array of simple primitives is equal to another one
+ * source: https://masteringjs.io/tutorials/fundamentals/compare-arrays
+ * @param { array } a - array to check if it equals to another array
+ * @param { array } b - array to be checked against for equality
+ * @returns { boolean } - boolean indicating whether the first array equals the second
+ */
+export const arrayEquals = (a, b) => {
+  return Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index])
+}
