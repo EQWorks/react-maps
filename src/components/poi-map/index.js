@@ -24,7 +24,7 @@ import DrawButtonGroup from './draw-button-group'
 import MapTooltip from '../tooltip'
 import tooltipNode from '../tooltip/tooltip-node'
 
-import { processLayers, isClusterZoomLevel } from './utils'
+import { processLayers, isClusterZoomLevel, arrayEquals } from './utils'
 import { setView, createCircleFromPointRadius, getCircleRadiusCentroid } from '../../shared/utils'
 import { getCursor, truncate, formatDataPOI } from '../../utils'
 import {
@@ -367,8 +367,8 @@ const POIMap = ({
   useLayoutEffect(() => {
     if (((data?.length && mapLayers.length) ||
          (mapMode === 'emptyMap' && !data?.length && !mapLayers.length)) &&
-        ((prevMapLayers.current.includes('POICluster') && mapLayers.includes('POICluster')) ||
-         (!prevMapLayers.current.includes('POICluster') && !mapLayers.includes('POICluster'))) &&
+        (arrayEquals(prevMapLayers.current, mapLayers) ||
+         (data?.length === 1 && mapLayers.includes('POIGeoJson'))) &&
         width && height) {
       viewStateDispatch(viewParam[mapMode])
     }
