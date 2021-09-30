@@ -450,11 +450,24 @@ const POIMap = ({
         onHover,
         mode,
         POIType,
+        zoom,
         selectedFeatureIndexes,
       } })
     }
     return []
-  }, [mapLayers, layerPool, mapProps, data, updatePOI, onClick, onHover, mode, POIType, selectedFeatureIndexes])
+  }, [
+    mapLayers,
+    layerPool,
+    mapProps,
+    data,
+    updatePOI,
+    onClick,
+    onHover,
+    mode,
+    POIType,
+    zoom,
+    selectedFeatureIndexes,
+  ])
 
   const getCurrentCursor = getCursor({ layers })
 
