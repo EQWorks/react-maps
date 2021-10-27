@@ -22,13 +22,13 @@ const StyledButtonDraw = withStyles({
   root: basicIconButtonStyle,
 })(Button)
 
-const StyledButtonDelete = withStyles(theme => ({
+const StyledButtonDelete = withStyles({
   root: {
     ...basicIconButtonStyle,
-    color: `${theme.palette.error.main}`,
-    borderColor: `${theme.palette.error.main}`,
+    color: 'red',
+    borderColor: 'red',
   },
-}))(Button)
+})(Button)
 
 const DrawButtonGroup = ({ mode, setDrawModeOn, onErase }) => {
   return (
@@ -44,6 +44,7 @@ const DrawButtonGroup = ({ mode, setDrawModeOn, onErase }) => {
         startIcon={<DeleteOutlineIcon />}
         size='small'
         type='secondary'
+        color='red'
         onClick={onErase}
       />
     </ButtonGroup>
