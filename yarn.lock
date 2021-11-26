@@ -1922,20 +1922,6 @@
     "@math.gl/web-mercator" "^3.4.2"
     d3-hexbin "^0.2.1"
 
-"@deck.gl/core@8.4.6":
-  version "8.4.6"
-  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-8.4.6.tgz#fc1cf34b8eea059bf531aee68ed280b33e1948b8"
-  integrity sha512-ubGvqBIJqqhX6W+IePj1Y4PGS3eYqgMApxM5CyrT6JFoT2QaQ8uBNQuM+/JCWSBix4JNHu8lsDukTWVpxKhtVQ==
-  dependencies:
-    "@loaders.gl/core" "^2.3.9"
-    "@loaders.gl/images" "^2.3.9"
-    "@luma.gl/core" "^8.4.1"
-    "@math.gl/web-mercator" "^3.4.2"
-    gl-matrix "^3.0.0"
-    math.gl "^3.4.2"
-    mjolnir.js "^2.5.0"
-    probe.gl "^3.2.1"
-
 "@deck.gl/geo-layers@8.4.6":
   version "8.4.6"
   resolved "https://registry.yarnpkg.com/@deck.gl/geo-layers/-/geo-layers-8.4.6.tgz#2e5e6ddf2e829cbf7a2b93d7f03a5d5de5f0e0b3"
@@ -9886,6 +9872,20 @@ nested-error-stacks@^2.0.0, nested-error-stacks@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/nested-error-stacks/-/nested-error-stacks-2.1.0.tgz#0fbdcf3e13fe4994781280524f8b96b0cdff9c61"
   integrity sha512-AO81vsIO1k1sM4Zrd6Hu7regmJN1NSiAja10gc4bX3F0wd+9rQmcuHQaHVQCYIEC8iFXnE+mavh23GOt7wBgug==
+
+"new-deck-gl-core@npm:@deck.gl/core@8.4.6":
+  version "8.4.6"
+  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-8.4.6.tgz#fc1cf34b8eea059bf531aee68ed280b33e1948b8"
+  integrity sha512-ubGvqBIJqqhX6W+IePj1Y4PGS3eYqgMApxM5CyrT6JFoT2QaQ8uBNQuM+/JCWSBix4JNHu8lsDukTWVpxKhtVQ==
+  dependencies:
+    "@loaders.gl/core" "^2.3.9"
+    "@loaders.gl/images" "^2.3.9"
+    "@luma.gl/core" "^8.4.1"
+    "@math.gl/web-mercator" "^3.4.2"
+    gl-matrix "^3.0.0"
+    math.gl "^3.4.2"
+    mjolnir.js "^2.5.0"
+    probe.gl "^3.2.1"
 
 nice-try@^1.0.4:
   version "1.0.5"
