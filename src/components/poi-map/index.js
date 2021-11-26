@@ -11,10 +11,10 @@ import React, {
 import PropTypes from 'prop-types'
 
 import DeckGL from '@deck.gl/react'
-import { FlyToInterpolator } from '@deck.gl/core'
+import { FlyToInterpolator } from 'new-deck-gl-core'
 import { StaticMap } from 'react-map-gl'
 import Geocoder from 'react-map-gl-geocoder'
-import { WebMercatorViewport } from '@deck.gl/core'
+import { WebMercatorViewport } from 'new-deck-gl-core'
 
 import { FormControlLabel } from '@material-ui/core'
 import { Switch } from '@eqworks/lumen-ui'

@@ -3,7 +3,7 @@
  *      https://github.com/EQWorks/flaat-dash/blob/master/src/components/layers/cluster-layer.js
  */
 
-import { CompositeLayer } from '@deck.gl/core'
+import { CompositeLayer } from 'new-deck-gl-core'
 import { IconLayer } from '@deck.gl/layers'
 import Supercluster from 'supercluster'
 

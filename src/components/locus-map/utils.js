@@ -1,4 +1,4 @@
-import { WebMercatorViewport } from '@deck.gl/core'
+import { WebMercatorViewport } from 'new-deck-gl-core'
 import { DrawCircleByDiameterMode, DrawRectangleMode, DrawPolygonMode } from '@nebula.gl/edit-modes'
 
 import { setFinalLayerDataProperty } from '../../shared/utils'

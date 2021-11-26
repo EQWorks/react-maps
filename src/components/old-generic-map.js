@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 
-import { FlyToInterpolator, MapView, WebMercatorViewport } from '@deck.gl/core'
+import { FlyToInterpolator, MapView, WebMercatorViewport } from 'new-deck-gl-core'
 import { DeckGL } from '@deck.gl/react'
 import { StaticMap } from 'react-map-gl'
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { GeoJsonLayer } from '@deck.gl/layers'
-import { WebMercatorViewport } from '@deck.gl/core'
+import { WebMercatorViewport } from 'new-deck-gl-core'
 import PropTypes from 'prop-types'
 
 import {

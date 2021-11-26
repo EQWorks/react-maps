@@ -1,4 +1,4 @@
-import { WebMercatorViewport } from '@deck.gl/core'
+import { WebMercatorViewport } from 'new-deck-gl-core'
 
 import circle from '@turf/circle'
 import { point } from '@turf/helpers'

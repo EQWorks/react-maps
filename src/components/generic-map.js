@@ -6,7 +6,7 @@ import {
   commonDefaultProps,
 } from '../shared/map-props'
 
-import { FlyToInterpolator, MapView } from '@deck.gl/core'
+import { FlyToInterpolator, MapView } from 'new-deck-gl-core'
 import { DeckGL } from '@deck.gl/react'
 import { StaticMap } from 'react-map-gl'
 
