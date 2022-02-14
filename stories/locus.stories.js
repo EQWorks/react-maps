@@ -294,7 +294,7 @@ const GeoJSONfsaMVTConfig = {
     },
     elevation: {
       value: { field: 'unique_visitors' },
-      valueOptions: [0, 1000],
+      valueOptions: [0, 40000],
       dataScale: 'linear',
     },
   },
@@ -307,8 +307,8 @@ const GeoJSONfsaMVTConfig = {
       },
     },
   },
-  visible: false,
-  opacity: 0.1,
+  visible: true,
+  opacity: 0.3,
   legend: { showLegend: true },
 }
 
@@ -384,7 +384,7 @@ const GeoJSONMVTArgs = {
 
 export const GeoJSONMVTLayer = Template.bind({})
 GeoJSONMVTLayer.args = GeoJSONMVTArgs
-GeoJSONMVTLayer.storyName = 'GeoJSON polygon Layer with MVT tile geometry data'
+GeoJSONMVTLayer.storyName = 'GeoJSON CT polygon Layer with MVT tile geometry data'
 
 initViewState = {
   latitude: 44.41,
