@@ -54,7 +54,7 @@ const Map = ({
   controller,
   mapboxApiAccessToken,
 }) => {
-  const [mapViewState, setMapViewState] = useState({ ...INIT_VIEW_STATE, ...initViewState })
+  const [mapViewState, setMapViewState] = useState({ ...INIT_VIEW_STATE, ...initViewState, pitch })
   const [hoverInfo, setHoverInfo] = useState({})
 
   /*
@@ -126,7 +126,13 @@ const Map = ({
           if ([isDragging, isZooming, isPanning, isRotating].some(action => !action)) {
             setHighlightObj(null)
           }
-          setMapViewState(o => ({ ...o, ...viewState }))
+          setMapViewState(o => ({
+            ...o,
+            ...viewState,
+            // viewState overrides some of INIT_VIEW_STATE props we would like to keep
+            transitionDuration: INIT_VIEW_STATE.transitionDuration,
+            transitionInterpolator: INIT_VIEW_STATE.transitionInterpolator,
+          }))
         }}
         onInteractionStateChange={(interactionState) => {
           const{ isDragging, inTransition, isZooming, isPanning, isRotating } = interactionState
