@@ -629,6 +629,7 @@ const POIMap = ({
           >
             <StaticMap
               ref={mapRef}
+              mapStyle={'mapbox://styles/dilshaneq/cl1uzim7q002m14m73lr5xy9o'}
               mapboxApiAccessToken={mapboxApiAccessToken}
             >
               {mode.startsWith('create-') && (
