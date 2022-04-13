@@ -8,7 +8,8 @@ import { IconLayer } from '@deck.gl/layers'
 import Supercluster from 'supercluster'
 
 import iconMapping from '../icons/cluster.json'
-import iconAtlas from '../icons/cluster.png'
+// import iconAtlas from '../icons/cluster.png'
+import iconAtlas from '../icons/EasterClusters2022.png'
 
 import { getSuperclusterRadius } from '../../shared/utils'
 import { CLUSTER_SIZE_SCALE, SUPERCLUSTER_ZOOM } from '../../constants'
