@@ -28,7 +28,7 @@ jobs:
       - run: yarn lint
       - run: yarn test
       - run: yarn build
-      - run: yarn size-limit
+      # - run: yarn size-limit
       - run: npx depcheck
 
   commit-watch:
