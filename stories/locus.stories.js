@@ -393,6 +393,11 @@ const MVTLayerConfig = {
       valueOptions: [[247, 254, 236], [10, 97, 11]],
       dataScale: 'linear',
     },
+    elevation: {
+      value: { field: 'value' },
+      valueOptions: [1, 10000],
+      dataScale: 'linear',
+    },
     // value key here helps the property of an MVT polygon with no data to be set transparent
     lineColor: {
       value: {
@@ -410,7 +415,7 @@ const MVTLayerConfig = {
       },
     },
   },
-  opacity: 0.2,
+  opacity: 0.8,
   legend: { showLegend: true },
   keyAliases: { value: 'Median Income' },
   formatDataValue: { value: d => '$' + d },
@@ -510,7 +515,7 @@ const xwiNoValueKeysReportArgs = {
 
 export const xwiNoValueKeysReport = Template.bind({})
 xwiNoValueKeysReport.args = xwiNoValueKeysReportArgs
-xwiNoValueKeysReport.storyName = 'Arc & Scatterplot Layers with no values for visualization fields'
+xwiNoValueKeysReport.storyName = 'Arc & Icon Layers with no values for visualization fields'
 
 
 let initViewState = {
@@ -522,7 +527,7 @@ let initViewState = {
 const MVTLayerArgs = {
   layerConfig: [MVTLayerConfig],
   dataConfig,
-  mapConfig: { ...mapConfig, initViewState, legendPosition: 'bottom-left' },
+  mapConfig: { ...mapConfig, initViewState, legendPosition: 'bottom-left', pitch: 45 },
 }
 
 export const MVTLayer = AuthTemplate.bind({})
