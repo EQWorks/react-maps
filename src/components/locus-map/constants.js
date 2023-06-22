@@ -125,7 +125,7 @@ export const LAYER_CONFIGURATIONS = {
     deckGLClass: MVTLayer,
     dataPropertyAccessor: d => d,
     geometry: { geoKey: 'geo_id', geometryAccessor: d => d },
-    visualizations: ['fill', 'lineWidth', 'lineColor'],
+    visualizations: ['fill', 'elevation', 'lineWidth', 'lineColor'],
     interactions: ['click', 'hover', 'tooltip', 'highlight'],
     defaultProps: {
       // extent: null, //[minX, minY, maxX, maxY]
@@ -133,6 +133,10 @@ export const LAYER_CONFIGURATIONS = {
       maxZoom: 23,
       lineWidthUnits: 'pixels',
       sizeScale: 1,
+      parameters: {
+        depthTest: false,
+      },
+      extruded: false,
     },
   },
   select: {
