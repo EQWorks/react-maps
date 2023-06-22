@@ -87,7 +87,7 @@
     "@babel/preset-react": "^7.0.0",
     "@eqworks/common-login": "^0.9.0-alpha.20",
     "@eqworks/lumen-labs": "^0.1.0-alpha.59",
-    "@size-limit/preset-small-lib": "^8.2.4",
+    "@size-limit/preset-big-lib": "^8.2.4",
     "@storybook/addon-actions": "^6.5.16",
     "@storybook/addon-links": "^6.5.16",
     "@storybook/addons": "^6.5.16",
