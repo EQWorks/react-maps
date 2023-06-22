@@ -242,6 +242,7 @@ const LocusMap = ({
     } else {
       setFinalDataConfig(dataConfig)
     }
+    // }
   }, [
     dataConfig,
     layerConfig,
