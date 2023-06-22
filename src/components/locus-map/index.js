@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo, useReducer, useCallback } from 'react'
 import PropTypes from 'prop-types'
 
-import { MVTLayer } from '@deck.gl/geo-layers'
-import tUnion from '@turf/union'
 import tCenter from '@turf/center'
 
 import { Loader, getTailwindConfigColor } from '@eqworks/lumen-labs'
@@ -51,9 +49,6 @@ const LocusMap = ({
   const [{ height, width }, setDimensions] = useState({})
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState([])
   const [selectShape, setSelectShape] = useState([])
-  const [renderedFeatures, setRenderedFeatures] = useState([])
-  const [renderCycleMVT, setRenderCycleMVT] = useState(0)
-  // limits viewport adjusting by data to one time only, the first time when map loads with data
   const [viewportAdjustedByData, setViewportAdjustedByData] = useState(false)
   const [processingMapData, setProcessingMapData] = useState(true)
   const [inInteractiveState, setInInteractiveState] = useState(true)
@@ -176,12 +171,6 @@ const LocusMap = ({
         }
       }, {})
 
-      layers = state.layers['MVTRenderedFeatures'] ?
-        {
-          ['MVTRenderedFeatures']: state.layers['MVTRenderedFeatures'],
-          ...layers,
-        } :
-        layers
       return {
         ...state,
         data,
@@ -218,210 +207,56 @@ const LocusMap = ({
       }
     }
 
-    if (type === 'get GeoJSONMVT') {
-      const { layer } = payload
-      return {
-        ...state,
-        layers: {
-          ...state.layers,
-          ...layer,
-        },
-      }
-    }
-
     return state
   }, { data: {}, layers: {} })
 
-  // get all geometry for polygons in the viewport from MVT binary file
-  const onViewportLoad = useCallback(tiles => {
-    let renderedTiles = []
-    tiles?.forEach(tile => {
-      // data in world coordinates (WGS84)
-      renderedTiles = tile.dataInWGS84 ? [...renderedTiles, ...tile.dataInWGS84] : renderedTiles
-    })
-    setRenderCycleMVT(o => o + 1)
-    setRenderedFeatures(renderedTiles)
-  }, [])
-
-  /**
-   * case when reading geometry from MVT layer to use in a GeoJSON layer:
-   * get params of GeoJSON layer that uses MVT geom
-   */
-  const {
-    geoJSONMVTLayerData,
-    geoJSONMVTDataId,
-    geoJSONMVTGeoKey,
-    geoJSONMVTLayer,
-    visibleMVTLayer,
-    textGeoJSONMVTLayer,
-  } = useMemo(() => {
-    const geoJSONLayers = layerConfig?.filter(layer => layer.layer === 'geojson')
-    const visibleMVTLayer = layerConfig.some(layer => {
-      return layer.layer === 'MVT' &&
-      (layer.visible === undefined || (layer.visible !== undefined && layer.visible))})
-    const geoJSONMVT = geoJSONLayers?.reduce((acc, layer) => {
-      const geoJSONLayerTileData = dataConfig.find(layerData => layerData.id === layer.dataId)
-      if (geoJSONLayerTileData?.data?.tileGeom) {
-        const { id, data } = geoJSONLayerTileData
-        const geoKey = layer.geometry?.geoKey || ''
-        acc = {
-          geoJSONMVTLayerData: data,
-          geoJSONMVTDataId: id,
-          geoJSONMVTGeoKey: geoKey,
-          geoJSONMVTLayer: layer,
-        }
-      }
-      return acc
-    }, {})
-    const textGeoJSONMVTLayer = layerConfig?.find(layer =>
-      layer.layer === 'text' && layer.dataId === geoJSONMVT.geoJSONMVTDataId)
-    return { ...geoJSONMVT, visibleMVTLayer, textGeoJSONMVTLayer }
-  }, [layerConfig, dataConfig])
-
-  // create MVT layer to get all geometry for polygons in the viewport
+  // set finalDataConfig
   useEffect(() => {
-    if (geoJSONMVTLayerData) {
-      const id = 'MVTRenderedFeatures'
-      const mvtLayer = new MVTLayer({
-        ...geoJSONMVTLayer,
-        id,
-        data: geoJSONMVTLayerData.tileGeom,
-        getFillColor: [251, 201, 78],
-        pickable: false,
-        visible: true,
-        opacity: 0,
-        showLegend: false,
-        onViewportLoad,
-      })
-      configurableLayerDispatch({
-        type: 'get GeoJSONMVT',
-        payload: {
-          layer: {
-            [id]: { deckLayer: mvtLayer },
-          },
-        },
-      })
-    }
-  }, [geoJSONMVTLayerData, geoJSONMVTLayer, onViewportLoad])
-
-  // set finalDataConfig, taking care of the case when reading geometry from MVT layer
-  useEffect(() => {
-    if (geoJSONMVTLayerData && geoJSONMVTGeoKey) {
-      const { tileData } = geoJSONMVTLayerData
-      if (tileData?.length) {
-        const tileDataObj = tileData.reduce((objData, item) => {
-          const id = item[geoJSONMVTGeoKey]
-          objData[id] = { ...item }
-          return objData
-        }, {})
-        // combine geometry from MVT layer with data
-        const combinedData = renderedFeatures.reduce((objData, item) => {
-          const id = item.properties?.geo_id
-          if (tileDataObj[id]) {
-            let newPoly = item
-            // merge polygons/multipolygons of a geo_id from different tiles into one single polygon/multipolygon
-            if (objData[id]) {
-              newPoly = tUnion(objData[id], item)
-            }
-            const centre = tCenter(newPoly)
-            const [longitude, latitude] = textGeoJSONMVTLayer && centre?.geometry ?
-              centre.geometry.coordinates :
-              []
-            objData[id] = {
-              ...newPoly,
-              properties:
-              {
-                ...item.properties,
-                ...tileDataObj[id],
-                longitude,
-                latitude,
-              },
-            }
-          }
-          return objData
-        }, {})
-        const finalData = Object.values(combinedData)
-        // add final data array for geojson layer
-        setFinalDataConfig([
-          ...dataConfig.filter(o => o.id !== geoJSONMVTDataId),
-          { id: geoJSONMVTDataId, data: finalData },
-        ])
-      } else {
-        setFinalDataConfig([
-          ...dataConfig.filter(o => o.id !== geoJSONMVTDataId),
-          { id: geoJSONMVTDataId, data: [] },
-        ])
-      }
-    } else {
-      const textLayer = layerConfig?.find(layer =>
-        layer.layer === 'text' &&
-        layer.dataId !== geoJSONMVTDataId)
-      const textLayerData = dataConfig?.find(data => data.id === textLayer?.dataId)?.data
-      let finalData = textLayerData
-      // enrich geoJSON data objects with centre coordinates of polygons for text layer if required
-      if (textLayer && textLayerData?.[0]?.type === 'Feature' &&
-        [GEOJSON_TYPES.polygon, GEOJSON_TYPES.multipolygon].includes(textLayerData[0].geometry?.type)) {
-        finalData = finalData?.reduce((acc, d) => {
-          const centre = tCenter(d)
-          const [longitude, latitude] = centre?.geometry?.coordinates || []
-          return [
-            ...acc,
-            {
-              ...d,
-              properties: {
-                ...d.properties,
-                longitude,
-                latitude,
-              },
+    const textLayer = layerConfig?.find(layer =>
+      layer.layer === 'text')
+    const textLayerData = dataConfig?.find(data => data.id === textLayer?.dataId)?.data
+    let finalData = textLayerData
+    // enrich geoJSON data objects with centre coordinates of polygons for text layer if required
+    if (textLayer && textLayerData?.[0]?.type === 'Feature' &&
+      [GEOJSON_TYPES.polygon, GEOJSON_TYPES.multipolygon].includes(textLayerData[0].geometry?.type)) {
+      finalData = finalData?.reduce((acc, d) => {
+        const centre = tCenter(d)
+        const [longitude, latitude] = centre?.geometry?.coordinates || []
+        return [
+          ...acc,
+          {
+            ...d,
+            properties: {
+              ...d.properties,
+              longitude,
+              latitude,
             },
-          ]
-        }, [])
-        const { dataId } = textLayer || {}
-        setFinalDataConfig([
-          ...dataConfig.filter(o => o.id !== dataId),
-          { id: dataId, data: finalData },
-        ])
-      } else {
-        setFinalDataConfig(dataConfig)
-      }
+          },
+        ]
+      }, [])
+      const { dataId } = textLayer || {}
+      setFinalDataConfig([
+        ...dataConfig.filter(o => o.id !== dataId),
+        { id: dataId, data: finalData },
+      ])
+    } else {
+      setFinalDataConfig(dataConfig)
     }
   }, [
     dataConfig,
     layerConfig,
-    renderedFeatures,
-    geoJSONMVTLayerData,
-    geoJSONMVTGeoKey,
-    geoJSONMVTDataId,
-    textGeoJSONMVTLayer,
   ])
 
   // set up condition for Loader render
   useEffect(() => {
     setProcessingMapData(true)
     // finalDataConfig cannot tell us when an MVT layer finishes loading tiles on the map
-    if (finalDataConfig?.length && !visibleMVTLayer) {
-      if (geoJSONMVTLayerData?.tileData?.length) {
-        const finalGeoJSONMVTData = finalDataConfig.find(({ id }) => id === geoJSONMVTDataId)
-        if ((((!renderedFeatures.length || !finalGeoJSONMVTData?.data?.length) && !renderCycleMVT) ||
-          finalGeoJSONMVTData?.data?.[0]?.properties) && !inInteractiveState) {
-          setProcessingMapData(false)
-        }
-      } else if (!inInteractiveState) {
-        setProcessingMapData(false)
-      }
-    } else if (!inInteractiveState) {
+    if (finalDataConfig?.length || !inInteractiveState) {
       setProcessingMapData(false)
     }
   }, [
-    layerConfig,
-    dataConfig,
-    geoJSONMVTLayerData,
-    geoJSONMVTDataId,
-    visibleMVTLayer,
     finalDataConfig,
-    renderedFeatures,
     inInteractiveState,
-    renderCycleMVT,
   ])
 
   // set initial layers and their corresponding data
@@ -478,11 +313,9 @@ const LocusMap = ({
     layerConfig,
     mapConfig,
     selectShape,
-    renderedFeatures,
     height,
     width,
     viewportAdjustedByData,
-    geoJSONMVTDataId,
     processingMapData,
   ])
 
@@ -509,88 +342,72 @@ const LocusMap = ({
       )
     ))}, [legends, mapConfig])
 
-  /**
-   * need to memoize map component so it doesn't render for each state change
-   * this eliminates errors in re-rendering layers on the map when state changes
-   */
-  const locusMap = useMemo(() => (
-    <Map
-      {
-        ...{
-          ...mapConfig,
-          ...(viewportAdjustedByData && { initViewState: null }),
-        }
-      }
-      layers={Object.values(layers).map(o => o.deckLayer)}
-      setDimensionsCb={o => setDimensions(o)}
-      viewStateOverride={viewStateOverride}
-      controller={controller}
-      getCursor={(mapConfig.getCursor || getCursor)(Object.values(layers).map(o => o.deckLayer))}
-      showTooltip={mapConfig.showMapTooltip}
-      renderTooltip={({ hoverInfo, mapWidth, mapHeight }) => {
-        const { tooltipProps, ...tooltipParams } = getTooltipParams({ hoverInfo })
-        const isMVTLayer = hoverInfo.layer.id.includes('MVT')
-        const objMVTData = isMVTLayer ?
-          getObjectMVTData({ dataConfig: finalDataConfig, hoverInfo }) :
-          {}
-        const { layer : { props: { interactions, visualizations } } } = hoverInfo
-        const layerVisDataKeys = Object.keys(visualizations).reduce((acc, key) => {
-          const datakey = visualizations?.[key]?.value?.field
-          return datakey && !acc.includes(datakey) ?
-            [...acc, datakey] :
-            acc
-        }, [])
-        const tooltip = interactions?.tooltip
-        const metricKeys = tooltip?.tooltipKeys?.metricKeys || layerVisDataKeys || []
-        const showTooltip = tooltip && (
-          (isMVTLayer && metricKeys.length &&
-            metricKeys.some(key => [hoverInfo.object, hoverInfo.object?.properties, objMVTData]
-              .some(el => el?.[key] || el?.[key] === 0))) ||
-          !isMVTLayer
-        )
-        if (showTooltip) {
-          return (
-            <MapTooltip
-              info={hoverInfo}
-              typography={mapConfig.typography || typographyDefaultProps.typography}
-              {...{ mapWidth, mapHeight, tooltipProps }}
-            >
-              {mapConfig.tooltipNode ||
-                tooltipNode({
-                  ...tooltipParams,
-                  fontFamily: mapConfig?.typography?.fontFamily ||
-                    typographyDefaultProps.typography.fontFamily,
-                  params: {
-                    ...hoverInfo.object,
-                    properties: {
-                      ...hoverInfo.object.properties,
-                      ...objMVTData,
-                    },
-                  },
-                })
-              }
-            </MapTooltip>
-          )
-        }
-        return null
-      }}
-      onClick={finalOnClick}
-      setProcessingMapData={setProcessingMapData}
-      setInInteractiveState={setInInteractiveState}
-    />
-  ), [
-    controller,
-    finalDataConfig,
-    mapConfig,
-    viewportAdjustedByData,
-    layers,
-    viewStateOverride,
-    finalOnClick,
-  ])
-
   return (
     <>
-      {locusMap}
+      <Map
+        {
+          ...{
+            ...mapConfig,
+            ...(viewportAdjustedByData && { initViewState: null }),
+          }
+        }
+        layers={Object.values(layers).map(o => o.deckLayer)}
+        setDimensionsCb={o => setDimensions(o)}
+        viewStateOverride={viewStateOverride}
+        controller={controller}
+        getCursor={(mapConfig.getCursor || getCursor)(Object.values(layers).map(o => o.deckLayer))}
+        showTooltip={mapConfig.showMapTooltip}
+        renderTooltip={({ hoverInfo, mapWidth, mapHeight }) => {
+          const { tooltipProps, ...tooltipParams } = getTooltipParams({ hoverInfo })
+          const isMVTLayer = hoverInfo.layer.id.includes('MVT')
+          const objMVTData = isMVTLayer ?
+            getObjectMVTData({ dataConfig: finalDataConfig, hoverInfo }) :
+            {}
+          const { layer : { props: { interactions, visualizations } } } = hoverInfo
+          const layerVisDataKeys = Object.keys(visualizations).reduce((acc, key) => {
+            const datakey = visualizations?.[key]?.value?.field
+            return datakey && !acc.includes(datakey) ?
+              [...acc, datakey] :
+              acc
+          }, [])
+          const tooltip = interactions?.tooltip
+          const metricKeys = tooltip?.tooltipKeys?.metricKeys || layerVisDataKeys || []
+          const showTooltip = tooltip && (
+            (isMVTLayer && metricKeys.length &&
+              metricKeys.some(key => [hoverInfo.object, hoverInfo.object?.properties, objMVTData]
+                .some(el => el?.[key] || el?.[key] === 0))) ||
+            !isMVTLayer
+          )
+          if (showTooltip) {
+            return (
+              <MapTooltip
+                info={hoverInfo}
+                typography={mapConfig.typography || typographyDefaultProps.typography}
+                {...{ mapWidth, mapHeight, tooltipProps }}
+              >
+                {mapConfig.tooltipNode ||
+                  tooltipNode({
+                    ...tooltipParams,
+                    fontFamily: mapConfig?.typography?.fontFamily ||
+                      typographyDefaultProps.typography.fontFamily,
+                    params: {
+                      ...hoverInfo.object,
+                      properties: {
+                        ...hoverInfo.object.properties,
+                        ...objMVTData,
+                      },
+                    },
+                  })
+                }
+              </MapTooltip>
+            )
+          }
+          return null
+        }}
+        onClick={finalOnClick}
+        setProcessingMapData={setProcessingMapData}
+        setInInteractiveState={setInInteractiveState}
+      />
       {legend}
       {processingMapData &&
         <LoaderWrapper>
