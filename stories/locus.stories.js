@@ -12,7 +12,6 @@ import regionGeoJSON from './data/locus-region-geojson.json'
 import wiReportData from './data/wi-report.json'
 import xwiReportData from './data/xwi-report.json'
 import mvtData from './data/locus-map-mvt.json'
-import fsaGeojsonData from './data/locus-map-fsa.json'
 
 
 const SelectButtonGroup = ({ setSelectShape }) => {
@@ -73,13 +72,6 @@ const dataConfig = [
     data: {
       tileGeom: 'https://mapsource.locus.place/maps/ct/{z}/{x}/{y}.vector.pbf?',
       tileData: mvtData,
-    },
-  },
-  {
-    id: 'fsa-geojson-123',
-    data: {
-      tileGeom: 'https://mapsource.locus.place/maps/fsa/{z}/{x}/{y}.vector.pbf?',
-      tileData: fsaGeojsonData,
     },
   },
   { id: 'select-123', data: [] },
@@ -393,6 +385,11 @@ const MVTLayerConfig = {
       valueOptions: [[247, 254, 236], [10, 97, 11]],
       dataScale: 'linear',
     },
+    elevation: {
+      value: { field: 'value' },
+      valueOptions: [1, 10000],
+      dataScale: 'linear',
+    },
     // value key here helps the property of an MVT polygon with no data to be set transparent
     lineColor: {
       value: {
@@ -410,7 +407,7 @@ const MVTLayerConfig = {
       },
     },
   },
-  opacity: 0.2,
+  opacity: 0.8,
   legend: { showLegend: true },
   keyAliases: { value: 'Median Income' },
   formatDataValue: { value: d => '$' + d },
@@ -510,7 +507,7 @@ const xwiNoValueKeysReportArgs = {
 
 export const xwiNoValueKeysReport = Template.bind({})
 xwiNoValueKeysReport.args = xwiNoValueKeysReportArgs
-xwiNoValueKeysReport.storyName = 'Arc & Scatterplot Layers with no values for visualization fields'
+xwiNoValueKeysReport.storyName = 'Arc & Icon Layers with no values for visualization fields'
 
 
 let initViewState = {
@@ -522,7 +519,7 @@ let initViewState = {
 const MVTLayerArgs = {
   layerConfig: [MVTLayerConfig],
   dataConfig,
-  mapConfig: { ...mapConfig, initViewState, legendPosition: 'bottom-left' },
+  mapConfig: { ...mapConfig, initViewState, legendPosition: 'bottom-left', pitch: 45 },
 }
 
 export const MVTLayer = AuthTemplate.bind({})
@@ -555,8 +552,24 @@ export const SelectDataLayer = () => {
 SelectDataLayer.storyName = 'Select data on map by drawing shapes'
 
 const layerConfig = [
+  {
+    ...MVTLayerConfig,
+    visualizations: {
+      fill: {
+        value: { field: 'value' },
+        valueOptions: [[247, 254, 236], [10, 97, 11]],
+        dataScale: 'linear',
+      },
+      // value key here helps the property of an MVT polygon with no data to be set transparent
+      lineColor: {
+        value: {
+          field: 'value',
+          customValue: [21, 116, 15],
+        },
+      },
+    },
+  },
   selectLayerConfig,
-  MVTLayerConfig,
   GeoJSONLayerConfig,
   arcLayerConfig,
   ScatterPlotLayer1Config,
@@ -601,13 +614,6 @@ const noDataConfig = [
     id: 'mvt-123',
     data: {
       tileGeom: 'https://mapsource-dev.locus.place/maps/ct/{z}/{x}/{y}.vector.pbf?',
-      tileData: [],
-    },
-  },
-  {
-    id: 'fsa-geojson-123',
-    data: {
-      tileGeom: 'https://mapsource.locus.place/maps/fsa/{z}/{x}/{y}.vector.pbf?',
       tileData: [],
     },
   },
