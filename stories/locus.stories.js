@@ -12,7 +12,6 @@ import regionGeoJSON from './data/locus-region-geojson.json'
 import wiReportData from './data/wi-report.json'
 import xwiReportData from './data/xwi-report.json'
 import mvtData from './data/locus-map-mvt.json'
-import fsaGeojsonData from './data/locus-map-fsa.json'
 
 
 const SelectButtonGroup = ({ setSelectShape }) => {
@@ -73,13 +72,6 @@ const dataConfig = [
     data: {
       tileGeom: 'https://mapsource.locus.place/maps/ct/{z}/{x}/{y}.vector.pbf?',
       tileData: mvtData,
-    },
-  },
-  {
-    id: 'fsa-geojson-123',
-    data: {
-      tileGeom: 'https://mapsource.locus.place/maps/fsa/{z}/{x}/{y}.vector.pbf?',
-      tileData: fsaGeojsonData,
     },
   },
   { id: 'select-123', data: [] },
@@ -393,6 +385,11 @@ const MVTLayerConfig = {
       valueOptions: [[247, 254, 236], [10, 97, 11]],
       dataScale: 'linear',
     },
+    elevation: {
+      value: { field: 'value' },
+      valueOptions: [1, 10000],
+      dataScale: 'linear',
+    },
     // value key here helps the property of an MVT polygon with no data to be set transparent
     lineColor: {
       value: {
@@ -410,115 +407,10 @@ const MVTLayerConfig = {
       },
     },
   },
-  opacity: 0.2,
+  opacity: 0.8,
   legend: { showLegend: true },
   keyAliases: { value: 'Median Income' },
   formatDataValue: { value: d => '$' + d },
-}
-
-const GeoJSONMVTConfig = {
-  layer: 'geojson',
-  dataId: 'mvt-123',
-  dataPropertyAccessor: d => d.properties,
-  geometry: { geoKey: 'geo_id' },
-  visualizations: {
-    fill: {
-      value: { field: 'value' },
-      valueOptions: [[173, 214, 250], [24, 66, 153]],
-      dataScale: 'linear',
-    },
-    elevation: {
-      value: { field: 'value' },
-      valueOptions: [0, 1000],
-      dataScale: 'linear',
-    },
-  },
-  interactions: {
-    tooltip: {
-      tooltipKeys: {
-        tooltipTitle1: 'geo_id',
-        metricKeys: ['value'],
-      },
-    },
-  },
-  opacity: 0.5,
-  legend: { showLegend: true },
-}
-
-const GeoJSONfsaMVTConfig = {
-  layer: 'geojson',
-  dataId: 'fsa-geojson-123',
-  dataPropertyAccessor: d => d.properties,
-  geometry: { geoKey: 'geo_ca_fsa' },
-  visualizations: {
-    fill: {
-      value: { field: 'visits' },
-      valueOptions: [[173, 214, 250], [24, 66, 153]],
-      dataScale: 'linear',
-    },
-    elevation: {
-      value: { field: 'unique_visitors' },
-      valueOptions: [0, 40000],
-      dataScale: 'linear',
-    },
-  },
-  interactions: {
-    tooltip: {
-      tooltipKeys: {
-        tooltipTitle1: 'geo_ca_fsa',
-        metricKeys: ['visits', 'unique_visitors'],
-      },
-    },
-  },
-  keyAliases,
-  visible: true,
-  opacity: 0.3,
-  legend: { showLegend: true },
-}
-
-const GeoJSONMVTLabelConfig = {
-  layer: 'geojson',
-  dataId: 'fsa-geojson-123',
-  dataPropertyAccessor: d => d.properties,
-  geometry: { geoKey: 'geo_ca_fsa' },
-  visualizations: {
-    fill: {
-      value: { field: 'visits' },
-      valueOptions: [[173, 214, 250], [24, 66, 153]],
-      dataScale: 'linear',
-    },
-  },
-  interactions: {
-    tooltip: {
-      tooltipKeys: {
-        tooltipTitle1: 'geo_ca_fsa',
-        metricKeys: ['visits'],
-      },
-    },
-  },
-  keyAliases,
-  visible: true,
-  opacity: 0.3,
-  legend: { showLegend: true },
-}
-
-const textGeoJSONMVTConfig = {
-  layer: 'text',
-  dataId: 'fsa-geojson-123',
-  dataPropertyAccessor: d => d.properties,
-  geometry: {
-    geoKey: 'geo_ca_fsa',
-    geometryAccessor: d => d.properties,
-  },
-  visualizations: {
-    text: {
-      value: {
-        title: 'geo_ca_fsa',
-        valueKeys: ['visits'],
-      },
-    },
-    pixelOffset: { value: [0, 0] },
-  },
 }
 
 const Template = (args) => <LocusMap { ...args } />
@@ -615,7 +507,7 @@ const xwiNoValueKeysReportArgs = {
 
 export const xwiNoValueKeysReport = Template.bind({})
 xwiNoValueKeysReport.args = xwiNoValueKeysReportArgs
-xwiNoValueKeysReport.storyName = 'Arc & Scatterplot Layers with no values for visualization fields'
+xwiNoValueKeysReport.storyName = 'Arc & Icon Layers with no values for visualization fields'
 
 
 let initViewState = {
@@ -627,7 +519,7 @@ let initViewState = {
 const MVTLayerArgs = {
   layerConfig: [MVTLayerConfig],
   dataConfig,
-  mapConfig: { ...mapConfig, initViewState, legendPosition: 'bottom-left' },
+  mapConfig: { ...mapConfig, initViewState, legendPosition: 'bottom-left', pitch: 45 },
 }
 
 export const MVTLayer = AuthTemplate.bind({})
@@ -639,36 +531,6 @@ initViewState = {
   longitude: -79.83,
   zoom: 3,
 }
-
-const GeoJSONMVTArgs = {
-  layerConfig: [GeoJSONMVTConfig],
-  dataConfig,
-  mapConfig: { ...mapConfig, initViewState, pitch: 45 },
-}
-
-export const GeoJSONMVTLayer = AuthTemplate.bind({})
-GeoJSONMVTLayer.args = GeoJSONMVTArgs
-GeoJSONMVTLayer.storyName = 'GeoJSON CT polygon Layer with MVT geometry data'
-
-const GeoJSONfsaMVTArgs = {
-  layerConfig: [GeoJSONfsaMVTConfig],
-  dataConfig,
-  mapConfig: { ...mapConfig, initViewState, pitch: 45 },
-}
-
-export const GeoJSONfsaMVTLayer = AuthTemplate.bind({})
-GeoJSONfsaMVTLayer.args = GeoJSONfsaMVTArgs
-GeoJSONfsaMVTLayer.storyName = 'GeoJSON FSA Polygon Layer with MVT geometry data'
-
-const GeoJSONMVTLabelArgs = {
-  layerConfig: [GeoJSONMVTLabelConfig, textGeoJSONMVTConfig],
-  dataConfig,
-  mapConfig: { ...mapConfig, initViewState },
-}
-
-export const GeoJSONMVTLabelLayer = AuthTemplate.bind({})
-GeoJSONMVTLabelLayer.args = GeoJSONMVTLabelArgs
-GeoJSONMVTLabelLayer.storyName = 'GeoJSON FSA polygon Layer with MVT geometry data & Text Layer for labels'
 
 export const SelectDataLayer = () => {
   const [selectShape, setSelectShape] = useState('circle')
@@ -690,8 +552,24 @@ export const SelectDataLayer = () => {
 SelectDataLayer.storyName = 'Select data on map by drawing shapes'
 
 const layerConfig = [
+  {
+    ...MVTLayerConfig,
+    visualizations: {
+      fill: {
+        value: { field: 'value' },
+        valueOptions: [[247, 254, 236], [10, 97, 11]],
+        dataScale: 'linear',
+      },
+      // value key here helps the property of an MVT polygon with no data to be set transparent
+      lineColor: {
+        value: {
+          field: 'value',
+          customValue: [21, 116, 15],
+        },
+      },
+    },
+  },
   selectLayerConfig,
-  MVTLayerConfig,
   GeoJSONLayerConfig,
   arcLayerConfig,
   ScatterPlotLayer1Config,
@@ -736,13 +614,6 @@ const noDataConfig = [
     id: 'mvt-123',
     data: {
       tileGeom: 'https://mapsource-dev.locus.place/maps/ct/{z}/{x}/{y}.vector.pbf?',
-      tileData: [],
-    },
-  },
-  {
-    id: 'fsa-geojson-123',
-    data: {
-      tileGeom: 'https://mapsource.locus.place/maps/fsa/{z}/{x}/{y}.vector.pbf?',
       tileData: [],
     },
   },
