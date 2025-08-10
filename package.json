@@ -84,7 +84,7 @@
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-env": "^7.6.0",
     "@babel/preset-react": "^7.0.0",
-    "@eqworks/common-login": "^0.9.0-alpha.39",
+    "@eqworks/common-login": "^0.9.1-alpha.0",
     "@eqworks/lumen-labs": "^0.1.0-alpha.59",
     "@size-limit/preset-small-lib": "^8.2.4",
     "@storybook/addon-actions": "^6.5.16",
@@ -103,9 +103,9 @@
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^4.0.8",
     "lodash.omit": "^4.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^7.7.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
     "size-limit": "^8.2.4"
   },
   "engines": {
